@@ -60,7 +60,7 @@ WSGI_APPLICATION = 'CLBR8.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': 'MyDatabase',
     }
 }
 
@@ -82,3 +82,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+LOGIN_URL = '/static/templates/App/login.html'
+
