@@ -8,8 +8,11 @@ urlpatterns = patterns('',
 
     url(r'^$', views.index, name='index'),
     url(r'^register/$', views.register, name='register'),
-    url(r'^login/$', views.user_login, name='login'),
     url(r'^logout/$', views.user_logout, name='logout'),
+    url(r'^profile/$', views.profile, name='profile'),
+    url(r'^profile/(?P<username>\w+)/$', views.profile, name='profile'),
+    url(r'^browse/$', views.browse_map, name='browse_map'),
+    #url(r'^profile/(?P<username>\w+)', views.profile, name='profile'),
 
     url(r'^admin/', include(admin.site.urls)),
 

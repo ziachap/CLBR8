@@ -83,4 +83,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 LOGIN_URL = '/static/templates/App/login.html'
+MEDIA_URL = '/media/'
 

@@ -1,0 +1,47 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ r_user.profile.artist_name }}'s Profile{% endblock %}
+
+{% block content %}
+
+    <div class="blank_page_content">
+        <!-- PROFILE BEGIN -->
+        <CENTER>
+            <p><img class="img-rounded custom-img-rounded"
+            {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+            src="{% static 'images/blank_user.jpg' %}"
+            {% else %}
+            src="{{ r_user.profile.profile_pic }}"
+            {%  endif %}
+            alt="Profile Picture" width="200" height="200"></p>
+        <h1>{{ r_user.profile.artist_name }}
+
+        <p><small>{{ r_user.first_name }} {{ r_user.last_name }}</small></p></h1>
+        </CENTER>
+        <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            {{ r_user.profile.bio }}
+            <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
+            <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
+            <i class="fa fa-facebook fa-2x"></i>
+            </a>
+            <a href="{{ r_user.profile.tw_link }}" target="_blank" class="btn btn-social-icon btn-twitter">
+            <i class="fa fa-twitter fa-2x"></i>
+            </a>
+            <a href="{{ r_user.profile.sc_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+            <i class="fa fa-soundcloud fa-2x"></i>
+            </a>
+            <a href="{{ r_user.profile.yt_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+            <i class="fa fa-youtube fa-2x"></i>
+            </a>
+            <a href="mailto:{{ r_user.email }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+            <i class="fa fa-envelope-o fa-2x"></i>
+            </a>
+
+        </div>
+        </div>
+
+
+        <!-- PROFILE END -->
+    </div>
+{% endblock %}
