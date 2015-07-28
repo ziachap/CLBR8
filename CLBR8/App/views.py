@@ -4,12 +4,19 @@ from django.template import loader, Context
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from App.forms import UserForm, UserProfileForm
+from django.conf import settings
+from django.db.models import Q
 from App.models import *
 
 # Create your views here.
-#@login_required
+
 def index(request):
-    print("index view")
+    # Redirect to feed if logged in
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('feed/')
+
+    print(settings.MEDIA_ROOT)
+    print(settings.MEDIA_URL)
     # get all users
     user_list = User.objects.all()
     # get current user
@@ -21,7 +28,6 @@ def index(request):
                 'c_user': c_user,
             })
 
-    print("1")
     # If the request is a HTTP POST, try to pull out the relevant information.
     if request.method == 'POST':
         print("POST method")
@@ -30,20 +36,18 @@ def index(request):
         password = request.POST.get('password', '')
 
         user = authenticate(username=username, password=password)
-        print("2")
+
         # If we have a User object, the details are correct.
         # If None (Python's way of representing the absence of a value), no user
         # with matching credentials was found.
         if user:
             # Is the account active? It could have been disabled.
             if user.is_active:
-                print("3")
                 # If the account is valid and active, we can log the user in.
                 # We'll send the user back to the homepage.
                 login(request, user)
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect('feed/')
             else:
-                print("4")
                 # An inactive account was used - no logging in!
                 return HttpResponse("Your account is disabled.")
         else:
@@ -53,9 +57,23 @@ def index(request):
     # The request is not a HTTP POST, so display the login form.
     # This scenario would most likely be a HTTP GET.
     else:
-        print("5")
         t = loader.get_template('App/index.html')
         return HttpResponse(t.render(context))
+
+def feed(request):
+
+    # get current user
+    c_user = request.user
+    # get all listings about from c_user's
+    r_listing = Listing.objects.filter(~Q(owner=c_user))
+
+    t = loader.get_template('App/feed.html')
+    c = Context({
+            'c_user': c_user,
+            'r_listing': r_listing,
+        })
+
+    return HttpResponse(t.render(c))
 
 def register(request):
     # Like before, get the request's context.
@@ -127,14 +145,47 @@ def profile(request, username):
     user_list = User.objects.all()
     # get current user
     c_user = request.user
+
     # get recipient user whose profile is being viewed
     r_user = User.objects.get(username=username)
+    # get recipient's listings
+    r_listing = Listing.objects.filter(owner=r_user)
 
     t = loader.get_template('App/profile.html')
     c = Context({
             'user_list': user_list,
             'c_user': c_user,
             'r_user': r_user,
+            'r_listing': r_listing,
+        })
+
+    return HttpResponse(t.render(c))
+
+def listing(request, id):
+
+    # get current user
+    c_user = request.user
+    # get recipient user whose profile is being viewed
+    r_listing = Listing.objects.get(id=id)
+    r_user = r_listing.owner
+
+    t = loader.get_template('App/listing.html')
+    c = Context({
+            'c_user': c_user,
+            'r_user': r_user,
+            'r_listing': r_listing,
+        })
+
+    return HttpResponse(t.render(c))
+
+def new_listing(request):
+
+    # get current user
+    c_user = request.user
+
+    t = loader.get_template('App/new_listing.html')
+    c = Context({
+            'c_user': c_user,
         })
 
     return HttpResponse(t.render(c))
@@ -143,12 +194,17 @@ def browse_map(request):
 
     # get all users
     user_list = User.objects.all()
+
+    # get all projects
+    project_list = Listing.objects.all()
+
     # get current user
     c_user = request.user
 
     t = loader.get_template('App/browse_map.html')
     c = Context({
             'user_list': user_list,
+            'project_list': project_list,
             'c_user': c_user,
         })
 

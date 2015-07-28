@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="{% static 'favicon.ico' %}">
 
-    <title>K LONDON // {% block title %}{% endblock %}</title>
+    <title>KL // {% block title %}{% endblock %}</title>
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
@@ -54,11 +54,11 @@
             <div id="navbar" class="navbar-collapse collapse">
               <ul class="nav navbar-nav">
                 {%  if c_user.is_authenticated %}
-                <li class=""><a href="{% url 'index' %}"><i class="fa fa-newspaper-o fa-fw"></i> Feed</a></li>
+                <li class=""><a href="{% url 'feed' %}"><i class="fa fa-newspaper-o fa-fw"></i> Feed</a></li>
               {% else %}
                 <li class=""><a href="{% url 'index' %}"><i class="fa fa-home fa-fw"></i> Home</a></li>
               {% endif %}
-                <li><a href="/browse"><i class="fa fa-map-marker fa-fw"></i> Find Projects</a></li>
+                <li><a href="{% url 'browse_map' %}"><i class="fa fa-map-marker fa-fw"></i> Find Projects</a></li>
 
 
 
@@ -69,7 +69,7 @@
                 <!-- ADMINISTRATION - SUPERUSERS ONLY --><li><a href="/admin/" target="_blank"><i class="fa fa-unlock-alt fa-fw"></i> Administration</a></li>
                 {% endif %}
                 {%  if c_user.is_authenticated %}
-                <li class=""><a href="{% url 'index' %}"><i class="fa fa-plus fa-fw"></i> New Project</a></li>
+                <li class=""><a href="{% url 'new_listing' %}"><i class="fa fa-plus fa-fw"></i> New Project</a></li>
               {% endif %}
                 <li class="dropdown">
                   {%  if c_user.is_authenticated %}
@@ -79,7 +79,7 @@
                              {% if c_user.profile.profile_pic == "" or c_user.profile.profile_pic == Null %}
                              src="{% static 'images/blank_user.jpg' %}"
                              {% else %}
-                             src="{{ c_user.profile.profile_pic }}"
+                             src="{{ c_user.profile.profile_pic.url }}"
                              {%  endif %}
                         alt="Profile Picture" width="20" height="20">
                         &nbsp; {{ c_user.profile.artist_name }}
@@ -163,6 +163,17 @@
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
     <script src="{% static 'bootstrap/assets/js/vendor/holder.min.js' %}"></script>
+    <!-- Audio Player -->
+    <script src="{% static 'wavesurferjs/wavesurfer.min.js' %}"></script>
+    {% block audio_init %}{%  endblock %}
+    <!-- Audio Player -->
+    <script src="{% static 'audiojs/audiojs/audio.min.js' %}"></script>
+    <!-- Initialize all audio content -->
+    <script>
+      audiojs.events.ready(function() {
+        var as = audiojs.createAll();
+      });
+    </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
   </body>

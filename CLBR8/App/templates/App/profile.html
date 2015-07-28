@@ -4,14 +4,14 @@
 
 {% block content %}
 
-    <div class="blank_page_content">
+    <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
         <!-- PROFILE BEGIN -->
         <CENTER>
             <p><img class="img-rounded custom-img-rounded"
             {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
             src="{% static 'images/blank_user.jpg' %}"
             {% else %}
-            src="{{ r_user.profile.profile_pic }}"
+            src="{{ r_user.profile.profile_pic.url }}"
             {%  endif %}
             alt="Profile Picture" width="200" height="200"></p>
         <h1>{{ r_user.profile.artist_name }}
@@ -21,6 +21,21 @@
         <div class="row">
         <div class="col-md-8 col-md-offset-2">
             {{ r_user.profile.bio }}
+
+            <!-- LISTINGS -->
+        <h3>{{ r_user.profile.artist_name }}'s projects </h3>
+        <div class="row">
+            {% for project in r_listing %}
+                <blockquote>
+                    <a href="/listing/{{ project.id }}">
+                        <h4>{{ project.title }}
+                       <small>{{ project.description|truncatewords:20 }}</small></h4>
+                    </a>
+                    <div class="audiojs"><audio src="{{ project.audio_file.url }}" preload="none"/></div>
+                </blockquote>
+            {% endfor %}
+        </div>
+
             <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
             <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
             <i class="fa fa-facebook fa-2x"></i>
@@ -40,6 +55,8 @@
 
         </div>
         </div>
+
+
 
 
         <!-- PROFILE END -->

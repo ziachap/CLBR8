@@ -1,0 +1,79 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ r_listing.title }}{% endblock %}
+
+{% block content %}
+<div class="blank_page_content">
+        <!-- LISTING BEGIN -->
+        <CENTER>
+            <p><img class="img-rounded custom-img-rounded"
+            {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+            src="{% static 'images/blank_listing.jpg' %}"
+            {% else %}
+            src="{{ r_user.profile.profile_pic.url }}"
+            {%  endif %}
+            alt="Profile Picture" width="200" height="200"></p>
+        <h1>{{ r_listing.title }}
+
+        <p><small><i class="fa fa-user fa-fw"></i> <a href="/profile/{{ r_user.username }}">{{ r_user.profile.artist_name }}</a> <i class="fa fa-gbp fa-fw"></i>{% if r_listing.price == 0 %}No Payment{% else %}{{ r_listing.price }}{% endif %}</small></p></h1>
+        </CENTER>
+        <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <!-- AUDIO PLAYER BEGIN -->
+            <table border=0 style="width: 100%">
+            <tbody>
+                <tr>
+                  <td width="1">
+                    <button class="btn btn-default btn-sm" onclick="wavesurfer.playPause();"><i id="audio_button" class="fa fa-spinner fa-spin fa-fw fa-2x"></i></button>
+                  </td>
+                  <td width="*">
+                    <div id="wave"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- AUDIO PLAYER END -->
+
+            <br />{{ r_listing.description }}
+            <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
+            <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
+            <i class="fa fa-facebook fa-2x"></i>
+            </a>
+        </div>
+        </div>
+
+        <!-- LISTING END -->
+    </div>
+
+{% endblock %}
+
+{% block audio_init %}
+    <!-- Create audio player for each project -->
+    <script>
+        var button = document.getElementById("audio_button");
+        var wavesurfer = Object.create(WaveSurfer);
+
+        wavesurfer.init({
+            container: document.querySelector('#wave'),
+            waveColor: 'LightSteelBlue',
+            progressColor: 'CornflowerBlue',
+            height: '60',
+            normalize: 'true'
+        });
+        wavesurfer.load('{{ r_listing.audio_file.url }}');
+
+        wavesurfer.on('ready', function () {
+            button.setAttribute('class', 'fa fa-play fa-fw fa-2x')
+        });
+        wavesurfer.on('pause', function () {
+            button.setAttribute('class', 'fa fa-play fa-fw fa-2x')
+        });
+        wavesurfer.on('play', function () {
+            button.setAttribute('class', 'fa fa-pause fa-fw fa-2x')
+        });
+
+        window.onresize = function(event) {
+        };
+
+    </script>
+{% endblock %}

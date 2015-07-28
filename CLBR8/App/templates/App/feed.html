@@ -1,0 +1,36 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+
+    <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
+    <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <!-- FEED BEGIN -->
+        <h1>Hey {{ c_user.profile.artist_name }}!
+        <p><small>Projects happening near you:</small></p>
+        </h1>
+
+        <div class="row">
+            {% for project in r_listing %}
+
+                    <blockquote>
+                    <a href="/listing/{{ project.id }}">
+                    <h4>{{ project.title }}
+                    <small>{{ project.description|truncatewords:20 }}</small></h4>
+                    </a>
+                    <div class="audiojs"><audio src="{{ project.audio_file.url }}" preload="none"/></div>
+                    </blockquote>
+
+            {% endfor %}
+        </div>
+
+
+
+
+        <!-- FEED END -->
+    </div>
+    </div>
+    </div>
+{% endblock %}
