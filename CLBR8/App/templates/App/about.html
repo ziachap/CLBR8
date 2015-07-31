@@ -1,0 +1,53 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+
+    <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
+        <!-- PROFILE BEGIN -->
+        <CENTER>
+            <p><img class="img-rounded custom-img-rounded" src="{% static 'images/zia.jpg' %}" alt="Profile Picture" width="180" height="180"></p>
+        <h1>About
+
+        <p><small>K LONDON was created by Zia Siddique</small></p></h1>
+        </CENTER>
+
+        <div class="row">
+        <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">
+            Thanks to the following technologies:
+            <br /><br />
+            <a href="https://www.djangoproject.com/" target="_blank" class="btn btn-default"><img src="{% static 'images/tech/django.png' %}" height="70px"></a>
+            <a href="https://jquery.com/" target="_blank" class="btn btn-default"><img src="{% static 'images/tech/jquery.png' %}" height="70px"></a>
+            <a href="http://getbootstrap.com/" target="_blank" class="btn btn-default"><img src="{% static 'images/tech/bootstrap.png' %}" height="70px"></a>
+            <a href="http://fortawesome.github.io/Font-Awesome/" target="_blank" class="btn btn-default"><img src="{% static 'images/tech/fontawesome.png' %}" height="70px"></a>
+            <a href="https://developers.google.com/maps/?hl=en" target="_blank" class="btn btn-default"><img src="{% static 'images/tech/gmaps.png' %}" height="70px"></a>
+            <a href="http://kolber.github.io/audiojs/" target="_blank" class="btn btn-default"><img src="{% static 'images/tech/audiojs.png' %}" height="70px"></a>
+            <a href="http://www.wavesurfer.fm/" target="_blank" class="btn btn-default"><img src="{% static 'images/tech/wavesurferjs.png' %}" height="70px"></a>
+
+            <h3>Connect with Zia: </h3>
+            <a href="https://www.facebook.com/hyvemusic" target="_blank" class="btn btn-social-icon btn-facebook">
+            <i class="fa fa-facebook fa-2x"></i>
+            </a>
+            <a href="https://twitter.com/hyveofficial" target="_blank" class="btn btn-social-icon btn-twitter">
+            <i class="fa fa-twitter fa-2x"></i>
+            </a>
+            <a href="https://soundcloud.com/hyveofficial" target="_blank" class="btn btn-social-icon btn-soundcloud">
+            <i class="fa fa-soundcloud fa-2x"></i>
+            </a>
+            <a href="https://www.youtube.com/user/hyveofficial" target="_blank" class="btn btn-social-icon btn-soundcloud">
+            <i class="fa fa-youtube fa-2x"></i>
+            </a>
+            <a href="mailto:siddiquezia@hotmail.com" target="_blank" class="btn btn-social-icon">
+            <i class="fa fa-envelope-o fa-2x"></i>
+            </a>
+
+        </div>
+        </div>
+
+
+
+
+        <!-- PROFILE END -->
+    </div>
+{% endblock %}

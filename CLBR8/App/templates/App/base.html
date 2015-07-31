@@ -15,7 +15,7 @@
     <!-- Bootstrap core CSS -->
     <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
     <!-- Font-Awesome CSS -->
-    <link href="{% static 'font-awesome-4.3.0/css/font-awesome.min.css' %}" rel="stylesheet" >
+    <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" >
     <!-- Bootstrap social CSS -->
     <link href="{% static 'bootstrap/css/bootstrap-social.css' %}" rel="stylesheet">
 
@@ -54,14 +54,11 @@
             <div id="navbar" class="navbar-collapse collapse">
               <ul class="nav navbar-nav">
                 {%  if c_user.is_authenticated %}
-                <li class=""><a href="{% url 'feed' %}"><i class="fa fa-newspaper-o fa-fw"></i> Feed</a></li>
+                <li class="{% block feed_active %}{% endblock %}"><a href="{% url 'feed' %}"><i class="fa fa-newspaper-o fa-fw"></i> Feed</a></li>
               {% else %}
-                <li class=""><a href="{% url 'index' %}"><i class="fa fa-home fa-fw"></i> Home</a></li>
+                <li class="{% block home_active %}{% endblock %}"><a href="{% url 'index' %}"><i class="fa fa-home fa-fw"></i> Home</a></li>
               {% endif %}
-                <li><a href="{% url 'browse_map' %}"><i class="fa fa-map-marker fa-fw"></i> Find Projects</a></li>
-
-
-
+                <li class="{% block find_projects_active %}{% endblock %}"><a href="{% url 'browse_map' %}"><i class="fa fa-map-marker fa-fw"></i> Find Projects</a></li>
 
               </ul>
               <ul class="nav navbar-nav navbar-right">
@@ -144,13 +141,11 @@
     <!-- Wrap the rest of the page in another container to center all the content. -->
 
     <div class="container marketing">
-    <div class="row">
       {% block content %}{% endblock %}
-    </div>
       <!-- FOOTER -->
       <footer>
-        <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>&copy; 2015 CLBR8, Inc. &middot; <a href="#">About</a> &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+            <p class="pull-right"><a href="#">Back to top</a></p>
+            <p>&copy; 2015 K LONDON, Inc. &middot; <a href="{% url 'about' %}">About</a> &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
       </footer>
 
     </div><!-- /.container -->
@@ -159,7 +154,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
     <script src="{% static 'bootstrap/assets/js/vendor/holder.min.js' %}"></script>
@@ -168,11 +163,37 @@
     {% block audio_init %}{%  endblock %}
     <!-- Audio Player -->
     <script src="{% static 'audiojs/audiojs/audio.min.js' %}"></script>
-    <!-- Initialize all audio content -->
+    <!-- Initialize all audio.js content -->
     <script>
       audiojs.events.ready(function() {
         var as = audiojs.createAll();
       });
+    </script>
+    <!-- Smooth scroll with TweenMax --><!-- MIGHT DELETE THIS -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/plugins/ScrollToPlugin.min.js"></script>
+    <script>
+    $(function(){
+        var $window = $(window);
+        var scrollTime = 0.2;
+        var scrollDistance = 200;
+
+        $window.on("mousewheel DOMMouseScroll", function(event){
+
+            event.preventDefault();
+
+            var delta = event.originalEvent.wheelDelta/120 || -event.originalEvent.detail/3;
+            var scrollTop = $window.scrollTop();
+            var finalScroll = scrollTop - parseInt(delta*scrollDistance);
+
+            TweenMax.to($window, scrollTime, {
+                scrollTo : { y: finalScroll, autoKill:true },
+                    ease: Power1.easeOut,
+                    overwrite: 5
+                });
+
+        });
+    });
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>

@@ -26,7 +26,7 @@ class UserAdmin(UserAdmin):
     inlines = (ProfileInline, ListingInline, ReviewInline, )
 
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'audio_file')
+    list_display = ('id', 'title', 'description', 'audio_file')
     fields = ('title', 'price', 'description', 'audio_file', 'longitude', 'latitude')
 
 class ReviewAdmin(admin.ModelAdmin):

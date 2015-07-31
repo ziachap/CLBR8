@@ -18,7 +18,7 @@
         <p><small><i class="fa fa-user fa-fw"></i> <a href="/profile/{{ r_user.username }}">{{ r_user.profile.artist_name }}</a> <i class="fa fa-gbp fa-fw"></i>{% if r_listing.price == 0 %}No Payment{% else %}{{ r_listing.price }}{% endif %}</small></p></h1>
         </CENTER>
         <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">
             <!-- AUDIO PLAYER BEGIN -->
             <table border=0 style="width: 100%">
             <tbody>
@@ -34,7 +34,7 @@
             </table>
             <!-- AUDIO PLAYER END -->
 
-            <br />{{ r_listing.description }}
+            <br />{{ r_listing.description|linebreaksbr }}
             <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
             <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
             <i class="fa fa-facebook fa-2x"></i>

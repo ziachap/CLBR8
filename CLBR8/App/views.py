@@ -3,7 +3,7 @@ from django.template import RequestContext
 from django.template import loader, Context
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
-from App.forms import UserForm, UserProfileForm
+from App.forms import *
 from django.conf import settings
 from django.db.models import Q
 from App.models import *
@@ -28,34 +28,9 @@ def index(request):
                 'c_user': c_user,
             })
 
-    # If the request is a HTTP POST, try to pull out the relevant information.
+    # Login form stuff
     if request.method == 'POST':
-        print("POST method")
-
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
-
-        user = authenticate(username=username, password=password)
-
-        # If we have a User object, the details are correct.
-        # If None (Python's way of representing the absence of a value), no user
-        # with matching credentials was found.
-        if user:
-            # Is the account active? It could have been disabled.
-            if user.is_active:
-                # If the account is valid and active, we can log the user in.
-                # We'll send the user back to the homepage.
-                login(request, user)
-                return HttpResponseRedirect('feed/')
-            else:
-                # An inactive account was used - no logging in!
-                return HttpResponse("Your account is disabled.")
-        else:
-            # Bad login details were provided. So we can't log the user in.
-            print "Invalid login details: {0}, {1}".format(username, password)
-            return HttpResponse("Invalid login details supplied.")
-    # The request is not a HTTP POST, so display the login form.
-    # This scenario would most likely be a HTTP GET.
+        return login_inpage(request)
     else:
         t = loader.get_template('App/index.html')
         return HttpResponse(t.render(context))
@@ -85,6 +60,7 @@ def register(request):
 
     # If it's a HTTP POST, we're interested in processing form data.
     if request.method == 'POST':
+        print("register: POST");
         # Attempt to grab information from the raw form information.
         # Note that we make use of both UserForm and UserProfileForm.
         user_form = UserForm(data=request.POST)
@@ -92,6 +68,7 @@ def register(request):
 
         # If the two forms are valid...
         if user_form.is_valid() and profile_form.is_valid():
+            print("register: form valid");
             # Save the user's form data to the database.
             user = user_form.save()
 
@@ -108,14 +85,21 @@ def register(request):
 
             # Did the user provide a profile picture?
             # If so, we need to get it from the input form and put it in the UserProfile model.
-            if 'picture' in request.FILES:
-                profile.picture = request.FILES['picture']
+            if 'profile_pic' in request.FILES:
+                profile.profile_pic = request.FILES['profile_pic']
 
             # Now we save the UserProfile model instance.
             profile.save()
+            print("register: new user saved");
 
             # Update our variable to tell the template registration was successful.
             registered = True
+
+            # Login the new user
+            user_login = authenticate(username=user.username, password=user.password)
+            if user_login:
+                print("register: logging new user in");
+                login(request, user_login)
 
         # Invalid form or forms - mistakes or something else?
         # Print problems to the terminal.
@@ -162,7 +146,7 @@ def profile(request, username):
     return HttpResponse(t.render(c))
 
 def listing(request, id):
-
+    print(id)
     # get current user
     c_user = request.user
     # get recipient user whose profile is being viewed
@@ -179,33 +163,104 @@ def listing(request, id):
     return HttpResponse(t.render(c))
 
 def new_listing(request):
-
+    print("views: new listing")
     # get current user
     c_user = request.user
+    # get form
+    form = ListingForm(request.POST)
 
-    t = loader.get_template('App/new_listing.html')
-    c = Context({
+    # get the request's context.
+    context = RequestContext(request, {
             'c_user': c_user,
-        })
+            'form': form,
+    })
 
-    return HttpResponse(t.render(c))
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        print("views: POST")
+
+        # create a form instance and populate it with data from the request:
+        form = ListingForm(request.POST, request.FILES)
+
+
+        # check whether it's valid:
+        if form.is_valid():
+            print("views: form valid")
+            # set owner and save listing
+            l = form.save(commit=False)
+            l.owner = c_user
+            l.save();
+
+            # switch request type and redirect to browse map
+            request.method = 'GET'
+            return browse_map(request)
+        else:
+            print form.errors
+
+    # if a GET (or any other method) we'll create a blank form
+    t = loader.get_template('App/new_listing.html')
+    return HttpResponse(t.render(context))
 
 def browse_map(request):
 
     # get all users
     user_list = User.objects.all()
-
     # get all projects
     project_list = Listing.objects.all()
-
     # get current user
     c_user = request.user
 
-    t = loader.get_template('App/browse_map.html')
-    c = Context({
-            'user_list': user_list,
-            'project_list': project_list,
-            'c_user': c_user,
-        })
+    # obtain the context for the user's request.
+    context = RequestContext(request, {
+                'user_list': user_list,
+                'project_list': project_list,
+                'c_user': c_user,
+            })
 
-    return HttpResponse(t.render(c))
+    # Login form stuff
+    if request.method == 'POST':
+        return login_inpage(request)
+    else:
+        t = loader.get_template('App/browse_map.html')
+        return HttpResponse(t.render(context))
+
+def login_inpage(request):
+    print("POST Request")
+    username = request.POST.get('username', '')
+    password = request.POST.get('password', '')
+
+    user = authenticate(username=username, password=password)
+
+    # If we have a User object, the details are correct.
+    # If None (Python's way of representing the absence of a value), no user
+    # with matching credentials was found.
+    if user:
+        # Is the account active? It could have been disabled.
+        if user.is_active:
+            # If the account is valid and active, we can log the user in.
+            # We'll send the user back to the homepage.
+            login(request, user)
+            return HttpResponseRedirect('feed/')
+        else:
+            # An inactive account was used - no logging in!
+            return HttpResponse("Your account is disabled.")
+    else:
+        # Bad login details were provided. So we can't log the user in.
+        print "Invalid login details: {0}, {1}".format(username, password)
+        return HttpResponse("Invalid login details supplied.")
+
+def about(request):
+    # get current user
+    c_user = request.user
+
+    # obtain the context for the user's request.
+    context = RequestContext(request, {
+                'c_user': c_user,
+            })
+
+    # Login form stuff
+    if request.method == 'POST':
+        return login_inpage(request)
+    else:
+        t = loader.get_template('App/about.html')
+        return HttpResponse(t.render(context))

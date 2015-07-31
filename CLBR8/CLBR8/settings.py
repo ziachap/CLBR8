@@ -83,13 +83,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'App\media')
+STATIC_ROOT = '/Users/Sir Zia/Documents/GitHub/CLBR8/CLBR8/App/static'
 MEDIA_ROOT = '/Users/Sir Zia/Documents/GitHub/CLBR8/CLBR8/App/media'
 

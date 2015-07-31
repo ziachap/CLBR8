@@ -1,7 +1,7 @@
 {% extends "App/base.html" %}
 {% load staticfiles %}
 {% block title %}Feed{% endblock %}
-
+{% block feed_active %}active{% endblock %}
 {% block content %}
 
     <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
@@ -9,7 +9,7 @@
     <div class="col-md-10 col-md-offset-1">
         <!-- FEED BEGIN -->
         <h1>Hey {{ c_user.profile.artist_name }}!
-        <p><small>Projects happening near you:</small></p>
+        <p><small>Here is what's happening near you:</small></p>
         </h1>
 
         <div class="row">
@@ -18,7 +18,7 @@
                     <blockquote>
                     <a href="/listing/{{ project.id }}">
                     <h4>{{ project.title }}
-                    <small>{{ project.description|truncatewords:20 }}</small></h4>
+                    <small>{{ project.description|truncatewords:15 }}</small></h4>
                     </a>
                     <div class="audiojs"><audio src="{{ project.audio_file.url }}" preload="none"/></div>
                     </blockquote>

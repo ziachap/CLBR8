@@ -18,10 +18,10 @@
 
         <p><small>{{ r_user.first_name }} {{ r_user.last_name }}</small></p></h1>
         </CENTER>
-        <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            {{ r_user.profile.bio }}
 
+        <div class="row">
+        <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">
+            {{ r_user.profile.bio|linebreaksbr }}
             <!-- LISTINGS -->
         <h3>{{ r_user.profile.artist_name }}'s projects </h3>
         <div class="row">
