@@ -1,0 +1,71 @@
+{% extends "App/settings_base.html" %}
+{% load staticfiles %}
+{% block title %}Account Settings{% endblock %}
+
+{% block settings_profile_active %}active{% endblock %}
+
+{% block settings_form %}
+    <div class="row">
+        <div class="col-xs-12 col-lg-11">
+            <h2>Profile Settings</h2><br />
+        </div><!--/.col-xs-6.col-lg-4-->
+    </div>
+    <form id="settings_profile_form" method="post" action="/settings_profile/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-xs-12 col-lg-6">
+                <h4>Artist Name</h4>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-music fa-fw"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.artist_name.name }}" placeholder="Artist Name" value="{{ form.artist_name.value|default_if_none:"" }}">
+                </div><br />
+                <h4>Bio</h4>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-pencil fa-fw"></i></span>
+                <textarea class="form-control input-md" type="textarea" rows="6" name="{{ form.bio.name }}" placeholder="Tell us about yourself...">{{ form.bio.value|default_if_none:"" }}</textarea>
+                </div><br />
+                <h4>Profile Picture</h4>
+
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><img class="img-circle"
+                             {% if c_user.profile.profile_pic == "" or c_user.profile.profile_pic == Null %}
+                             src="{% static 'images/blank_user.jpg' %}"
+                             {% else %}
+                             src="{{ c_user.profile.profile_pic.url }}"
+                             {%  endif %}
+                        alt="Profile Picture" width="32" height="32">
+                </span>
+                <input class="form-control input-lg" type="file" name="{{ form.profile_pic.name }}" placeholder="prf_pic" value="{{ form.profile_pic.value|default_if_none:"" }}">
+                </div><br />
+            </div><!--/.col-xs-6.col-lg-4-->
+
+            <div class="col-xs-12 col-lg-6">
+                <h4>Social Connections</h4>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-facebook fa-fw" style="color: royalblue;"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.fb_link.name }}" placeholder="Facebook URL" value="{{ form.fb_link.value|default_if_none:"" }}">
+                </div><br />
+
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-twitter fa-fw" style="color: deepskyblue;"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.tw_link.name }}" placeholder="Twitter URL" value="{{ form.tw_link.value|default_if_none:"" }}">
+                </div><br />
+
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-soundcloud fa-fw" style="color: darkorange;"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.sc_link.name }}" placeholder="Soundcloud URL" value="{{ form.sc_link.value|default_if_none:"" }}">
+                </div><br />
+
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-youtube fa-fw" style="color: indianred;"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.yt_link.name }}" placeholder="YouTube URL" value="{{ form.yt_link.value|default_if_none:"" }}">
+                </div><br />
+            </div>
+        </div>
+        <div class="row">
+            <CENTER>
+                <input class="btn btn-default" type="submit" value="Save Changes" />
+            </CENTER>
+        </div>
+    </form>
+{% endblock %}

@@ -23,15 +23,16 @@ class ProfileInline(admin.StackedInline):
 
 # Define a new User admin
 class UserAdmin(UserAdmin):
+    list_display = ('id', 'username', 'first_name', 'last_name')
     inlines = (ProfileInline, ListingInline, ReviewInline, )
 
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'description', 'audio_file')
-    fields = ('title', 'price', 'description', 'audio_file', 'longitude', 'latitude')
+    list_display = ('id', 'title', 'owner', 'genre', 'audio_file')
+    fields = ('owner', 'title', 'price', 'description', 'genre', 'audio_file', 'longitude', 'latitude', 'address')
 
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('summary', 'description')
-    fields = ('summary', 'description', 'rating_1', 'rating_2', 'rating_3')
+    fields = ('author', 'recipient', 'summary', 'description', 'rating_1', 'rating_2', 'rating_3')
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

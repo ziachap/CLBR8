@@ -27,7 +27,6 @@
 
     <!-- Custom styles for this template -->
     <link href="{% static 'css/carousel.css' %}" rel="stylesheet">
-
     <!-- Master style -->
     <link href="{% static 'css/master.css' %}" rel="stylesheet">
 
@@ -63,10 +62,10 @@
               </ul>
               <ul class="nav navbar-nav navbar-right">
                 {%  if c_user.is_superuser %}
-                <!-- ADMINISTRATION - SUPERUSERS ONLY --><li><a href="/admin/" target="_blank"><i class="fa fa-unlock-alt fa-fw"></i> Administration</a></li>
+                <!-- ADMINISTRATION - SUPERUSERS ONLY --><li><a href="/admin/" target="_blank"><i class="fa fa-unlock-alt fa-fw"></i> Admin</a></li>
                 {% endif %}
                 {%  if c_user.is_authenticated %}
-                <li class=""><a href="{% url 'new_listing' %}"><i class="fa fa-plus fa-fw"></i> New Project</a></li>
+                <li class="{% block new_project_active %}{% endblock %}"><a href="{% url 'new_listing' %}"><i class="fa fa-plus fa-fw"></i> New Project</a></li>
               {% endif %}
                 <li class="dropdown">
                   {%  if c_user.is_authenticated %}
@@ -87,7 +86,7 @@
                     <li><a href="#"><i class="fa fa-music fa-fw"></i> My Projects</a></li>
                     <li><a href="#"><i class="fa fa-inbox fa-fw"></i> Inbox</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="#"><i class="fa fa-cog fa-fw"></i> Settings</a></li>
+                    <li><a href="{% url 'settings_user' %}"><i class="fa fa-cog fa-fw"></i> Settings</a></li>
                     <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
 
                   {% else %}
@@ -142,12 +141,14 @@
 
     <div class="container marketing">
       {% block content %}{% endblock %}
+      {% block footer %}
+      <hr>
       <!-- FOOTER -->
-      <footer>
+      <footer class="footer">
             <p class="pull-right"><a href="#">Back to top</a></p>
             <p>&copy; 2015 K LONDON, Inc. &middot; <a href="{% url 'about' %}">About</a> &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
       </footer>
-
+      {% endblock %}
     </div><!-- /.container -->
 
 
@@ -161,14 +162,14 @@
     <!-- Audio Player -->
     <script src="{% static 'wavesurferjs/wavesurfer.min.js' %}"></script>
     {% block audio_init %}{%  endblock %}
-    <!-- Audio Player -->
+    {% comment %}<!-- Audio Player -->
     <script src="{% static 'audiojs/audiojs/audio.min.js' %}"></script>
     <!-- Initialize all audio.js content -->
     <script>
       audiojs.events.ready(function() {
         var as = audiojs.createAll();
       });
-    </script>
+    </script>{% endcomment %}
     <!-- Smooth scroll with TweenMax --><!-- MIGHT DELETE THIS -->
     <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/plugins/ScrollToPlugin.min.js"></script>
@@ -197,5 +198,6 @@
     </script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+    {% block scripts %}{% endblock %}
   </body>
 </html>

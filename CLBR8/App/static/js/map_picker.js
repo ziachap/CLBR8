@@ -11,7 +11,7 @@
         if (responses && responses.length > 0) {
           updateMarkerAddress(responses[0].formatted_address);
         } else {
-          updateMarkerAddress('Cannot determine address at this location.');
+          updateMarkerAddress('?');
         }
       });
     }
@@ -33,12 +33,13 @@
 
     function updateMarkerAddress(str) {
       document.getElementById('address').innerHTML = str;
+      document.getElementById('address_form').value = str;
     }
 
     function initialize() {
       var latLng = new google.maps.LatLng(51.5072, -0.1275);
       map = new google.maps.Map(document.getElementById('mapCanvas'), {
-        zoom: 12,
+        zoom: 13,
         center: latLng,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDefaultUI: true

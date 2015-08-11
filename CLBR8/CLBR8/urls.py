@@ -18,9 +18,14 @@ urlpatterns = patterns('',
     url(r'^logout/$', views.user_logout, name='logout'),
     url(r'^profile/(?P<username>\w+)/$', views.profile, name='profile'),
     url(r'^listing/([0-9]+)/$', views.listing, name='listing'),
+    url(r'^edit_listing/([0-9]+)/$', views.edit_listing, name='edit_listing'),
+    url(r'^delete_listing/([0-9]+)/$', views.delete_listing, name='delete_listing'),
     url(r'^new_listing/$', views.new_listing, name='new_listing'),
     url(r'^browse/$', views.browse_map, name='browse_map'),
     url(r'^about/$', views.about, name='about'),
+
+    url(r'^settings_user/$', views.settings_user, name='settings_user'),
+    url(r'^settings_profile/$', views.settings_profile, name='settings_profile'),
 
     url(r'^admin/', include(admin.site.urls)),
 )

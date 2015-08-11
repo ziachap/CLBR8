@@ -18,6 +18,7 @@ body {
   right: 0;
   left: 0;
   z-index: 20;
+  margin-bottom: 80px;
 }
 
 /* Flip around the padding for proper display in narrow viewports */
@@ -26,8 +27,8 @@ body {
   padding-left: 0;
 }
 .navbar-wrapper .navbar {
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 10px;
+  padding-left: 10px;
 }
 .navbar-wrapper .navbar .container {
   width: auto;
@@ -107,8 +108,8 @@ body {
     padding-left: 15px;
   }
   .navbar-wrapper .navbar {
-    padding-right: 0;
-    padding-left: 0;
+    padding-right: 0px;
+    padding-left: 0px;
   }
 
   /* The navbar becomes detached from the top, so we round the corners */

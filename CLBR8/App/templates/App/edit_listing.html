@@ -1,0 +1,132 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}Edit Project{% endblock %}
+
+{% block head %}
+    <!-- google map picker -->
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCJ_kAww6tmQVER8PQtFicAZ7JdjekbnU">
+    </script>
+    <style type="text/css">
+      #mapCanvas { width: 40%; min-height: 400px; height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script src="{% static 'gmapsjs/gmaps.js' %}"></script>
+    <script src="{% static 'geometa/geometa.js' %}"></script>
+
+    <!-- My google maps script -->
+    <script>
+        // Passing django values to the map
+        var init_lat = {{ r_listing.latitude }};
+        var init_lon = {{ r_listing.longitude }};
+    </script>
+    <script src="{% static 'js/map_picker_edit.js' %}"></script>
+
+{%  endblock %}
+
+{% block content %}
+<div class="blank_page_content">
+<div class="row"><div class="col-md-12 col-md-offset-2">
+    <div class="row">
+        <div class="col-md-5 ">
+            <h1>Edit Project: <small>{{ r_listing.title }}</small></h1>
+            {% if form.errors %}<p></p>{% endif %}
+        </div>
+    </div><br />
+
+    <form id="edit_listing_form" method="post" action="/edit_listing/{{ r_listing.id }}/" enctype="multipart/form-data">
+
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-xs-3 col-md-3">
+            <div class="input-group margin-bottom-sm">
+            <span class="input-group-addon"><i class="fa fa-edit fa-fw"></i></span>
+            <input class="form-control input-lg" type="text" name="{{ form.title.name }}" placeholder="Title" value="{{ form.title.value|default_if_none:"" }}" size="25">
+            </div>
+            </div>
+            <div class="col-xs-2 col-md-2">
+            <div class="input-group margin-bottom-sm">
+            <span class="input-group-addon"><i class="fa fa-gbp fa-fw"></i></span>
+            <input class="form-control input-lg" type="text" name="{{ form.price.name }}" placeholder="Price" value="{{ form.price.value|default_if_none:"" }}" size="25">
+            </div>
+            </div>
+        </div><br />
+
+        <div class="row">
+            <div class="col-xs-5 col-md-5">
+            <div class="input-group margin-bottom-sm">
+            <span class="input-group-addon"><i class="fa fa-commenting-o fa-fw"></i></span>
+            <input class="form-control" type="text" name="{{ form.description.name }}" placeholder="Description" value="{{ form.description.value|default_if_none:"" }}" size="25">
+            </div>
+            </div>
+        </div><br />
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3">
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-globe fa-fw"></i></span>
+                <input class="form-control" id="address_input" type="text" placeholder="Search Address" size="20">
+                </div>
+            </div>
+            <div class="col-xs-5 col-md-2">
+                <div class="btn btn-default" id="address_search"><i class="fa fa-search fa-fw"></i></div>
+                <div class="btn btn-default" id="find_me" onclick="doGeolocation();">Find Me</div>
+            </div>
+        </div>
+        <br />
+        <div id="mapCanvas"></div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-5">
+            <table class="table table-striped">
+                <tr><td>
+                    <i class="fa fa-home fa-fw"></i> <div id="address">address</div>
+                </tr></td>
+            </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-3 col-md-2">
+            <div class="input-group margin-bottom-sm">
+            <span class="input-group-addon"><i class="fa fa-globe fa-fw"></i>LAT</span>
+            <input class="form-control" id="lat_form" type="text" name="{{ form.latitude.name }}" placeholder="Latitude" value="{{ form.latitude.value|default_if_none:"" }}" size="25">
+            </div>
+            </div>
+            <div class="col-xs-3 col-md-2">
+            <div class="input-group margin-bottom-sm">
+            <span class="input-group-addon"><i class="fa fa-globe fa-fw"></i>LNG</span>
+            <input class="form-control" id="long_form" type="text" name="{{ form.longitude.name }}" placeholder="Longitude" value="{{ form.longitude.value|default_if_none:"" }}" size="25">
+            </div>
+            </div>
+            <input class="form-control" id="address_form" type="hidden" name="{{ form.address.name }}" placeholder="Address" size="25"><br />
+        </div><br />
+
+        <div class="row">
+            <div class="col-xs-5 col-md-5">
+            <div class="input-group margin-bottom-sm">
+            <span class="input-group-addon"><i class="fa fa-music fa-fw"></i></span>
+            {{ form.genre }}
+            </div>
+            </div>
+        </div><br />
+
+        <div class="row">
+            <div class="col-xs-5 col-md-5">
+            <div class="input-group margin-bottom-sm">
+            <span class="input-group-addon"><i class="fa fa-music fa-fw"></i></span>
+            <input class="form-control input-lg" type="file" name="{{ form.audio_file.name }}" value="{{ form.audio_file.value|default_if_none:"" }}" size="25">
+            </div>
+            </div>
+        </div><br />
+
+        <input class="btn btn-default" type="submit" value="Save Changes">
+
+
+    </form>
+    <a href="/delete_listing/{{ r_listing.id }}/"><button class="btn btn-default"><i class="fa fa-trash fa-fw"></i> Delete Project</button></a>
+    <br>
+</div>
+</div></div>
+<br />
+{% endblock %}

@@ -40,7 +40,8 @@ def feed(request):
     # get current user
     c_user = request.user
     # get all listings about from c_user's
-    r_listing = Listing.objects.filter(~Q(owner=c_user))
+    # r_listing = Listing.objects.filter(~Q(owner=c_user))
+    r_listing = Listing.objects.all()
 
     t = loader.get_template('App/feed.html')
     c = Context({
@@ -146,7 +147,7 @@ def profile(request, username):
     return HttpResponse(t.render(c))
 
 def listing(request, id):
-    print(id)
+
     # get current user
     c_user = request.user
     # get recipient user whose profile is being viewed
@@ -201,6 +202,68 @@ def new_listing(request):
     t = loader.get_template('App/new_listing.html')
     return HttpResponse(t.render(context))
 
+def edit_listing(request, id):
+    print("views: edit listing")
+    # get current user
+    c_user = request.user
+    # get form
+    r_listing = Listing.objects.get(id=id)
+    form = ListingForm(instance=r_listing)
+
+    # get the request's context.
+    context = RequestContext(request, {
+        'r_listing': r_listing,
+        'c_user': c_user,
+        'form': form,
+    })
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        print("views: POST")
+
+        # create a form instance and populate it with data from the request:
+        form = ListingForm(request.POST, request.FILES, instance=r_listing)
+
+
+        # check whether it's valid:
+        if form.is_valid():
+            print("views: form valid")
+            # set owner and save listing
+            form.save()
+
+            # switch request type and redirect to browse map
+            request.method = 'GET'
+            return browse_map(request)
+        else:
+            print form.errors
+
+    # if a GET (or any other method) we'll create a blank form
+    t = loader.get_template('App/edit_listing.html')
+    return HttpResponse(t.render(context))
+
+def delete_listing(request, id):
+    print("views: delete listing")
+
+    # delete listing's audio_file
+    this_listing = Listing.objects.get(id=id)
+
+    # delete listing
+    dead = Listing.objects.get(id=id).delete()
+
+    # get current user
+    c_user = request.user
+    r_listing = Listing.objects.all()
+
+    # get the request's context.
+    context = RequestContext(request, {
+        'c_user': c_user,
+        'r_listing': r_listing,
+    })
+
+    # go back to feed
+    t = loader.get_template('App/feed.html')
+    return HttpResponse(t.render(context))
+
 def browse_map(request):
 
     # get all users
@@ -248,6 +311,80 @@ def login_inpage(request):
         # Bad login details were provided. So we can't log the user in.
         print "Invalid login details: {0}, {1}".format(username, password)
         return HttpResponse("Invalid login details supplied.")
+
+def settings_user(request):
+    # get current user
+    c_user = request.user
+    # get form
+    form = EditUserForm(instance=c_user)
+
+    # obtain the context for the user's request.
+    context = RequestContext(request, {
+                'c_user': c_user,
+                'form': form,
+            })
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        print("views: POST")
+
+        # create a form instance and populate it with data from the request:
+        form = EditUserForm(request.POST, request.FILES, instance=c_user)
+
+        # check whether it's valid:
+        if form.is_valid():
+            print("views: form valid")
+
+            # copy extra info and save user
+            form.save();
+
+            # switch request type and refresh
+            request.method = 'GET'
+            return settings_user(request)
+        else:
+            print form.errors
+
+    # if a GET (or any other method) we'll create a blank form
+    t = loader.get_template('App/settings_user.html')
+    return HttpResponse(t.render(context))
+
+def settings_profile(request):
+    # get current user
+    c_user = request.user
+    c_profile = request.user.profile
+    # get form
+    r_user = Profile.objects.get(user=c_user)
+    form = EditUserProfileForm(instance=r_user)
+
+    # obtain the context for the user's request.
+    context = RequestContext(request, {
+                'c_user': c_user,
+                'form': form,
+            })
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        print("views: POST")
+
+        # create a form instance and populate it with data from the request:
+        form = EditUserProfileForm(request.POST, request.FILES, instance=c_profile)
+
+        # check whether it's valid:
+        if form.is_valid():
+            print("views: form valid")
+            # copy extra info and save profile
+
+            form.save();
+
+            # switch request type and refresh
+            request.method = 'GET'
+            return settings_profile(request)
+        else:
+            print form.errors
+
+    # if a GET (or any other method) we'll create a blank form
+    t = loader.get_template('App/settings_profile.html')
+    return HttpResponse(t.render(context))
 
 def about(request):
     # get current user

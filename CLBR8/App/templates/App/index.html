@@ -19,7 +19,7 @@
             <div class="carousel-caption">
               <h1>Connecting Musicians</h1>
               <p>CLBR8 connect you with other vocalists and musicians near you, so that you can take your music to the next level</p>
-              <p><a class="btn btn-lg btn-primary" href="#" role="button">Get started!</a></p>
+              <p><a class="btn btn-lg btn-primary" href="/register" role="button">Get started!</a></p>
             </div>
           </div>
         </div>
@@ -29,7 +29,7 @@
             <div class="carousel-caption">
               <h1>We got a motherfuckin dynamic map</h1>
               <p>See who's making a fire mixtape in your area!</p>
-              <p><a class="btn btn-lg btn-primary" href="#" role="button">Find projects near you</a></p>
+              <p><a class="btn btn-lg btn-primary" href="{% url 'browse_map' %}" role="button">Find projects near you</a></p>
             </div>
           </div>
         </div>
@@ -39,7 +39,7 @@
             <div class="carousel-caption">
               <h1>Give ya boy a rating</h1>
               <p>If he did a sick job</p>
-              <p><a class="btn btn-lg btn-primary" href="#" role="button">Create a free account</a></p>
+              <p><a class="btn btn-lg btn-primary" href="/register" role="button">Create a free account</a></p>
             </div>
           </div>
         </div>
@@ -116,8 +116,12 @@
           <img class="featurette-image img-responsive center-block" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
         </div>
       </div>
-
-      <hr class="featurette-divider">
-
       <!-- /END THE FEATURETTES -->
+      <br /><br /><br />
+      <div class="row featurette">
+        <div class="col-md-12">
+            <CENTER><a href="{% url 'register' %}"><button class="btn btn-xlg btn-default"><i class="fa fa-pencil" ></i> Get Started!</button></a></CENTER>
+        </div>
+      </div>
+      <br /><br />
 {% endblock %}

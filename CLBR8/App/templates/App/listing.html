@@ -3,19 +3,37 @@
 {% block title %}{{ r_listing.title }}{% endblock %}
 
 {% block content %}
-<div class="blank_page_content">
+<div class="blank_page_content"  xmlns="http://www.w3.org/1999/html">
+        <br />
         <!-- LISTING BEGIN -->
+        {% if r_user == c_user %}
+            <div class="row">
+            <div class="pull-right col-lg-3">
+                <a href="/edit_listing/{{ r_listing.id }}"><button class="btn btn-default btn-md" ><i class="fa fa-pencil"></i> Edit Project</button></a>
+            </div>
+        {% endif %}
         <CENTER>
-            <p><img class="img-rounded custom-img-rounded"
-            {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
-            src="{% static 'images/blank_listing.jpg' %}"
+            <p>
+            <img class="img-rounded custom-img-rounded"
+            {% if r_listing.listing_pic == "" or r_listing.listing_pic == Null %}
+                {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+                    src="{% static 'images/blank_listing.jpg' %}"
+                {% else %}
+                    src="{{ r_user.profile.profile_pic.url }}"
+                {% endif %}
             {% else %}
-            src="{{ r_user.profile.profile_pic.url }}"
+                src="{{ r_listing.listing_pic.url }}"
             {%  endif %}
-            alt="Profile Picture" width="200" height="200"></p>
+            alt="Profile Picture" width="200" height="200">
+            <img class="img-rounded custom-img-rounded"
+                    src="https://maps.googleapis.com/maps/api/staticmap?center={{ r_listing.latitude }},{{ r_listing.longitude }}&zoom=13&size=200x200&maptype=roadmap&markers=color:red%7C%7C{{ r_listing.latitude }},{{ r_listing.longitude }}"
+                    alt="Map" width="200" height="200">
+            </p>
         <h1>{{ r_listing.title }}
-
-        <p><small><i class="fa fa-user fa-fw"></i> <a href="/profile/{{ r_user.username }}">{{ r_user.profile.artist_name }}</a> <i class="fa fa-gbp fa-fw"></i>{% if r_listing.price == 0 %}No Payment{% else %}{{ r_listing.price }}{% endif %}</small></p></h1>
+        <p><small>
+            <i class="fa fa-user fa-fw"></i> <a href="/profile/{{ r_user.username }}">{{ r_user.profile.artist_name }}</a>
+            <i class="fa fa-gbp fa-fw"></i>{% if r_listing.price == 0 %}No Payment{% else %}{{ r_listing.price }}{% endif %}
+            <i class="fa fa-map-marker fa-fw"></i> {{ r_listing.address }}</small></p></h1>
         </CENTER>
         <div class="row">
         <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">

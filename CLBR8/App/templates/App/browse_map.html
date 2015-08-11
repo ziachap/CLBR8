@@ -3,8 +3,12 @@
 {% block title %}Browse Projects{% endblock %}
 {% block find_projects_active %}active{% endblock %}
 {% block head %}
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
     <!-- Google Maps API -->
     <style type="text/css">
+      body {
+        overflow:hidden;
+      }
       #map-canvas { width: 100%; min-height: 400px; height: 100%; margin: 0; padding: 0;}
       #map-canvas-full {
         position:fixed;
@@ -17,7 +21,7 @@
         min-height: 800px;
         height: 100%;
         overflow:hidden;
-        z-index: 6;
+        z-index: 1;
       }
       .info_content {
         width: 340px;
@@ -27,11 +31,23 @@
       .info_icons {
         margin-top: -15px;
         margin-bottom: 4px;
-        margin-left: -2px;
+        margin-left: -6px;
       }
     </style>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCJ_kAww6tmQVER8PQtFicAZ7JdjekbnU"></script>
     <script type="text/javascript">
+      myStyle = [{"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"lightness":"-5"}]},{"featureType":"landscape.man_made","elementType":"labels.text.fill","stylers":[{"saturation":"21"}]},{"featureType":"landscape.natural","elementType":"geometry.fill","stylers":[{"saturation":"1"},{"color":"#eae2d3"},{"lightness":"20"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"saturation":"39"},{"lightness":"7"},{"gamma":"1.06"},{"visibility":"on"},{"hue":"#00b8ff"},{"weight":"1.44"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"lightness":"100"},{"weight":"1.16"},{"color":"#e0e0e0"}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"saturation":"-16"},{"lightness":"28"},{"gamma":"0.87"}]},{"featureType":"water","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"saturation":"-75"},{"lightness":"-15"},{"gamma":"1.35"},{"weight":"1.45"},{"hue":"#00dcff"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#626262"}]},{"featureType":"water","elementType":"labels.text.stroke","stylers":[{"saturation":"19"},{"weight":"1.84"}]}];
+      //myStyle = [{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#747474"},{"lightness":"23"}]},{"featureType":"poi.attraction","elementType":"geometry.fill","stylers":[{"color":"#f38eb0"}]},{"featureType":"poi.government","elementType":"geometry.fill","stylers":[{"color":"#ced7db"}]},{"featureType":"poi.medical","elementType":"geometry.fill","stylers":[{"color":"#ffa5a8"}]},{"featureType":"poi.park","elementType":"geometry.fill","stylers":[{"color":"#c7e5c8"}]},{"featureType":"poi.place_of_worship","elementType":"geometry.fill","stylers":[{"color":"#d6cbc7"}]},{"featureType":"poi.school","elementType":"geometry.fill","stylers":[{"color":"#c4c9e8"}]},{"featureType":"poi.sports_complex","elementType":"geometry.fill","stylers":[{"color":"#b1eaf1"}]},{"featureType":"road","elementType":"geometry","stylers":[{"lightness":"100"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"},{"lightness":"100"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffd4a5"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffe9d2"}]},{"featureType":"road.local","elementType":"all","stylers":[{"visibility":"simplified"}]},{"featureType":"road.local","elementType":"geometry.fill","stylers":[{"weight":"3.00"}]},{"featureType":"road.local","elementType":"geometry.stroke","stylers":[{"weight":"0.30"}]},{"featureType":"road.local","elementType":"labels.text","stylers":[{"visibility":"on"}]},{"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#747474"},{"lightness":"36"}]},{"featureType":"road.local","elementType":"labels.text.stroke","stylers":[{"color":"#e9e5dc"},{"lightness":"30"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"visibility":"on"},{"lightness":"100"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#d2e7f7"}]}];
+
+      $(document).ready(function () {
+          resize_map();
+      });
+
+      function resize_map() {
+        var new_height = $(window).height();
+        document.getElementById("map-canvas-full").style["min-height"] = new_height+"px";
+      }
+
       function initialize() {
         // Setup map
         var mapOptions = {
@@ -45,18 +61,18 @@
           zoomControl: true,
           zoomControlOptions: {
             position: google.maps.ControlPosition.LEFT_CENTER
-          }
+          },
+          styles: myStyle
         };
+
         var map = new google.maps.Map(document.getElementById('map-canvas-full'),
             mapOptions);
 
         // Populate markers with location data
         var markers = [
             {% for project in project_list %}
-                ['{{ project.title }}', {{ project.latitude }},{{ project.longitude }}],
+                ['{{ project.title|escape }}', {{ project.latitude }},{{ project.longitude }}],
             {% endfor %}
-        //['Home', 51.507408,-0.277812],
-        //['Palace of Westminster, London', 51.499633,-0.124755]
         ];
 
         // Populate marker info windows with listing dat
@@ -65,18 +81,21 @@
             ['<div class="info_content">' +
             '<div class="row"><div class="col-md-10"><h3>{{ project.title }}</h3></div></div>' +
             '<div class="row">' +
-                '<div class="col-md-2">' +
-                    '<img class="img-rounded custom-img-rounded" src="{% static 'images/blank_user.jpg' %}" width="50" height="50">' +
+                '<div class="col-md-3">' +
+                    '<img class="img-rounded custom-img-rounded" src="{% static 'images/blank_user.jpg' %}" width="75" height="75">' +
                 '</div>' +
-                '<div class="col-md-6 info_icons">' +
-                    '<h3><small><p><i class="fa fa-user fa-fw"></i> <a href="/profile/{{ project.owner.username }}">{{ project.owner.profile.artist_name }}</a></p> ' +
-                    '<p><i class="fa fa-gbp fa-fw"></i>{% if project.price == 0 %}No Payment{% else %}{{ project.price }}{% endif %}</p></small></h3>' +
+                '<div class="col-md-7 info_icons">' +
+                    '<h3><small>' +
+                        '<p><i class="fa fa-user fa-fw"></i> <a href="/profile/{{ project.owner.username }}">{{ project.owner.profile.artist_name }}</a></p> ' +
+                        '<p><i class="fa fa-map-marker fa-fw"></i> {{ project.address|truncatewords:5 }}</p>' +
+                        '<p><i class="fa fa-gbp fa-fw"></i>{% if project.price == 0 %}No Payment{% else %}{{ project.price }}{% endif %}</p>' +
+                    '</small></h3>' +
                 '</div>' +
             '</div>' +
             '<p>{{ project.description|truncatewords:20 }}</p>' +
             //'<p><button class="btn btn-default btn-sm" onclick="wavesurfer{{ forloop.counter0 }}.playPause();"><i class="fa fa-play fa-fw"></i></button></button><div id="wave{{ forloop.counter0 }}"></div></p>' +
-            '<div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none" /></div><br />' +
-            '<CENTER><a href="/listing/{{ project.id }}"><button class="btn btn-default btn-sm"><i class="fa fa-search fa-fw"></i> More Info</button></a></CENTER>' +
+            '<CENTER><div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none" /></div><br />' +
+            '<a href="/listing/{{ project.id }}"><button class="btn btn-default btn-sm"><i class="fa fa-search fa-fw"></i> More Info</button></a></CENTER>' +
             '</div>'],
             {% endfor %}
         ];
@@ -91,6 +110,7 @@
             marker = new google.maps.Marker({
                 position: position,
                 map: map,
+                icon: '{% static 'images/map/marker1_small.png' %}',
                 title: markers[i][0]
             });
 
@@ -107,7 +127,8 @@
       google.maps.event.addDomListener(window, 'load', initialize);
 
       window.onresize = function(event) {
-        initialize()
+        initialize();
+        resize_map();
       };
 
     </script>
@@ -129,6 +150,8 @@
     `
     </div>
 {% endblock %}{% endcomment %}
+
+{% block footer %}{% endblock %}
 
 {% block audio_init %}
 

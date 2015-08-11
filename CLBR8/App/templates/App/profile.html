@@ -5,7 +5,15 @@
 {% block content %}
 
     <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
+        <br />
         <!-- PROFILE BEGIN -->
+        {% if r_user == c_user %}
+            <div class="row">
+            <div class="pull-right col-lg-3">
+                <a href="{% url 'settings_profile' %}"><button class="btn btn-default btn-md" ><i class="fa fa-pencil"></i> Edit Profile</button></a>
+            </div>
+            </div>
+        {% endif %}
         <CENTER>
             <p><img class="img-rounded custom-img-rounded"
             {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
@@ -25,15 +33,19 @@
             <!-- LISTINGS -->
         <h3>{{ r_user.profile.artist_name }}'s projects </h3>
         <div class="row">
+            <div id="container">
             {% for project in r_listing %}
+                <div class="item">
                 <blockquote>
                     <a href="/listing/{{ project.id }}">
                         <h4>{{ project.title }}
                        <small>{{ project.description|truncatewords:20 }}</small></h4>
                     </a>
-                    <div class="audiojs"><audio src="{{ project.audio_file.url }}" preload="none"/></div>
+                    <div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none"/></div>
                 </blockquote>
+                </div>
             {% endfor %}
+            </div>
         </div>
 
             <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
@@ -56,9 +68,34 @@
         </div>
         </div>
 
-
-
-
         <!-- PROFILE END -->
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'packery/packery.pkgd.min.js' %}"></script>
+    <script src="{% static 'draggability/draggabilly.pkgd.min.js' %}"></script>
+    <script>
+        var $container = $('#container').packery({
+          columnWidth: 80
+        });
+
+        $container.find('.item').each( function( i, itemElem ) {
+          // make element draggable with Draggabilly
+          var draggie = new Draggabilly( itemElem );
+          // bind Draggabilly events to Packery
+          $container.packery( 'bindDraggabillyEvents', draggie );
+        });
+
+        $(window).load(function() {
+            $container.packery({
+              itemSelector: '.item',
+              gutter: 5
+            });
+        });
+    </script>
+    <link href="{% static 'css/listing_packery.css' %}" rel="stylesheet">
+    <style type="text/css">
+        .item:hover { background-color: #FBFBFB; }
+    </style>
 {% endblock %}
