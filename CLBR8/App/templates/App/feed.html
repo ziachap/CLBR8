@@ -18,17 +18,22 @@
                 <div class="item feed_item">
                     <div class="row"><div class="col-md-10"><h3>{{ project.title }}</h3></div></div>
                     <div class="row">
-                        <div class="col-xs-3 col-md-3">
+                        <div class="col-xs-3 col-md-3"><a href="/listing/{{ project.id }}">
                             <img class="img-rounded custom-img-rounded"
-                            src="{% static 'images/blank_user.jpg' %}"
-                            onmouseover="this.src='https://maps.googleapis.com/maps/api/staticmap?center={{ project.latitude }},{{ project.longitude }}&zoom=4&size=75x75&maptype=roadmap'"
-                            onmouseout="this.src='{% static 'images/blank_user.jpg' %}'"
+                            {% if project.listing_pic %}
+                                src="{{ project.listing_pic.thumbnail.url }}"
+                                onmouseout="this.src='{{ project.listing_pic.thumbnail.url }}'"
+                            {% else %}
+                                src="{% static 'images/blank_user.jpg' %}"
+                                onmouseout="this.src='{% static 'images/blank_user.jpg' %}'"
+                            {% endif %}
+{#                            onmouseover="this.src='https://maps.googleapis.com/maps/api/staticmap?center={{ project.latitude }},{{ project.longitude }}&zoom=4&size=75x75&maptype=roadmap'"#}
                             alt="Map" width="75" height="75">
-                        </div>
+                        </a></div>
                         <div class="col-xs-9 col-md-9 info_icons">
                             <h3><small>
                                 <p><i class="fa fa-user fa-fw"></i> <a href="/profile/{{ project.owner.username }}">{{ project.owner.profile.artist_name }}</a></p>
-                                <p><i class="fa fa-map-marker fa-fw"></i> {{ project.address|truncatewords:5 }}</p>
+                                <p><i class="fa fa-map-marker fa-fw"></i> {{ project.address|truncatechars:25 }}</p>
                                 <p><i class="fa fa-gbp fa-fw"></i>{% if project.price == 0 %}No Payment{% else %}{{ project.price }}{% endif %}</p>
                             </small></h3>
                         </div>

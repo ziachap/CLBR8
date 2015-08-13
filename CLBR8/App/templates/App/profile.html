@@ -19,7 +19,7 @@
             {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
             src="{% static 'images/blank_user.jpg' %}"
             {% else %}
-            src="{{ r_user.profile.profile_pic.url }}"
+            src="{{ r_user.profile.profile_pic.thumbnail.url }}"
             {%  endif %}
             alt="Profile Picture" width="200" height="200"></p>
         <h1>{{ r_user.profile.artist_name }}
@@ -30,7 +30,23 @@
         <div class="row">
         <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">
             {{ r_user.profile.bio|linebreaksbr }}
-            <!-- LISTINGS -->
+        <!-- FOLLOWING -->
+        <h3>{{ r_user.profile.artist_name }} is following </h3>
+        <div class="row">
+            <div id="container">
+            {% for follower in r_user.profile.following.all %}
+                <div class="item">
+                <blockquote>
+                    <a href="/profile/{{ follower.profile.artist_name }}">
+                        <h4>{{ follower.profile.artist_name }}
+                       <small>{{ follower.profile.bio|truncatechars:36 }}</small></h4>
+                    </a>
+                </blockquote>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+        <!-- LISTINGS -->
         <h3>{{ r_user.profile.artist_name }}'s projects </h3>
         <div class="row">
             <div id="container">
@@ -47,23 +63,23 @@
             {% endfor %}
             </div>
         </div>
-
-            <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
-            <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
-            <i class="fa fa-facebook fa-2x"></i>
-            </a>
-            <a href="{{ r_user.profile.tw_link }}" target="_blank" class="btn btn-social-icon btn-twitter">
-            <i class="fa fa-twitter fa-2x"></i>
-            </a>
-            <a href="{{ r_user.profile.sc_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
-            <i class="fa fa-soundcloud fa-2x"></i>
-            </a>
-            <a href="{{ r_user.profile.yt_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
-            <i class="fa fa-youtube fa-2x"></i>
-            </a>
-            <a href="mailto:{{ r_user.email }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
-            <i class="fa fa-envelope-o fa-2x"></i>
-            </a>
+        <hr>
+        <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
+        <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
+        <i class="fa fa-facebook fa-2x"></i>
+        </a>
+        <a href="{{ r_user.profile.tw_link }}" target="_blank" class="btn btn-social-icon btn-twitter">
+        <i class="fa fa-twitter fa-2x"></i>
+        </a>
+        <a href="{{ r_user.profile.sc_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+        <i class="fa fa-soundcloud fa-2x"></i>
+        </a>
+        <a href="{{ r_user.profile.yt_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+        <i class="fa fa-youtube fa-2x"></i>
+        </a>
+        <a href="mailto:{{ r_user.email }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+        <i class="fa fa-envelope-o fa-2x"></i>
+        </a>
 
         </div>
         </div>

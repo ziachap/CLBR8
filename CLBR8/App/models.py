@@ -1,4 +1,5 @@
 from django.db import models
+from stdimage.models import StdImageField
 from App.custom_models import *
 from django.contrib.auth.models import User
 
@@ -6,6 +7,7 @@ from django.contrib.auth.models import User
 
 class Profile(models.Model):
     user = models.OneToOneField(User)
+    following = models.ManyToManyField(User, null=True, blank=True, related_name='following')
     date_created = models.DateField(auto_now_add=True, null=True)
     artist_name = models.CharField(max_length=100)
     bio = models.TextField(max_length=1000, null=True, blank=True)
@@ -15,9 +17,12 @@ class Profile(models.Model):
     tw_link = models.URLField(max_length=500, null=True, blank=True)
     sc_link = models.URLField(max_length=500, null=True, blank=True)
     yt_link = models.URLField(max_length=500, null=True, blank=True)
-    profile_pic = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    profile_pic = StdImageField(upload_to='profile_pictures/', null=True, blank=True, variations={
+        'thumbnail': (300, 300, True),
+    })
     def __str__(self):
         return "%s" % self.user.username
+
 class Listing(models.Model):
     id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(User, null=True)
@@ -44,10 +49,14 @@ class Listing(models.Model):
     producer = models.BooleanField(default=True)
     vocalist = models.BooleanField(default=True)
     audio_file = models.FileField(upload_to='audio_files/', null=True)
-    listing_pic = models.ImageField(upload_to='listing_pictures/', null=True, blank=True)
+    listing_pic = StdImageField(upload_to='listing_pictures/', null=True, blank=True, variations={
+        'thumbnail': (300, 300, True),
+    })
     longitude = models.DecimalField(decimal_places=32, max_digits=36, default=-0.1275)
     latitude = models.DecimalField(decimal_places=32, max_digits=36, default=51.5072)
     address = models.CharField(max_length=200, default='Who knows where!')
+    def __str__(self):
+        return "%s" % self.title
 
 
 class Review(models.Model):
@@ -58,3 +67,13 @@ class Review(models.Model):
     rating_1 = IntegerRangeField(min_value=1, max_value=5, default=3)
     rating_2 = IntegerRangeField(min_value=1, max_value=5, default=3)
     rating_3 = IntegerRangeField(min_value=1, max_value=5, default=3)
+    def __str__(self):
+        return "%s" % self.summary
+
+class Offer(models.Model):
+    id = models.AutoField(primary_key=True)
+    listing = models.ForeignKey(Listing, null=True, related_name='listing')
+    user = models.ForeignKey(User, null=True, related_name='user')
+    description = models.TextField(max_length=500, null=True)
+    def __str__(self):
+        return "%s" % self.user.username

@@ -24,6 +24,20 @@ textarea {
     width: 100%;
 }
 
+.round_outline {
+    passing: 15px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+}
+
+.pad-15 {
+    padding: 15px;
+}
+
+.custom-brand {
+    width: 100px;
+}
+
 /*.audiojs { margin: 15px 0px 20px; }*/
 
 .map_holder_outer {

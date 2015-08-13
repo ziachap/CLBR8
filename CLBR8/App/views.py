@@ -135,6 +135,9 @@ def profile(request, username):
     r_user = User.objects.get(username=username)
     # get recipient's listings
     r_listing = Listing.objects.filter(owner=r_user)
+    # get user's following
+    #r_profile = Profile.objects.get(user=c_user)
+    #r_following = r_profile.following.objects.all()
 
     t = loader.get_template('App/profile.html')
     c = Context({
@@ -142,23 +145,33 @@ def profile(request, username):
             'c_user': c_user,
             'r_user': r_user,
             'r_listing': r_listing,
+            #'r_following': r_following,
         })
 
     return HttpResponse(t.render(c))
 
 def listing(request, id):
 
-    # get current user
+    # get data
     c_user = request.user
-    # get recipient user whose profile is being viewed
     r_listing = Listing.objects.get(id=id)
     r_user = r_listing.owner
+    r_offers = Offer.objects.filter(listing=r_listing)
+
+    # check if already applied to this listing
+    tmp1 = Offer.objects.filter(listing=r_listing)
+    tmp2 = tmp1.filter(user=c_user)
+    user_applied = False
+    if tmp2:
+        user_applied = True
 
     t = loader.get_template('App/listing.html')
     c = Context({
             'c_user': c_user,
             'r_user': r_user,
             'r_listing': r_listing,
+            'r_offers': r_offers,
+            'user_applied': user_applied,
         })
 
     return HttpResponse(t.render(c))
@@ -262,6 +275,57 @@ def delete_listing(request, id):
 
     # go back to feed
     t = loader.get_template('App/feed.html')
+    return HttpResponse(t.render(context))
+
+def new_offer(request, id):
+    print("views: new offer")
+    # get data
+    c_user = request.user
+    r_listing = Listing.objects.get(id=id)
+
+    # check if already applied to this listing
+    r_offers = Offer.objects.filter(listing=r_listing)
+    prev_offers = r_offers.filter(user=c_user)
+    user_applied = False
+    if prev_offers:
+        user_applied = True
+
+    # get form
+    form = OfferForm(request.POST)
+
+    # get the request's context.
+    context = RequestContext(request, {
+            'c_user': c_user,
+            'form': form,
+            'r_listing': r_listing,
+            'user_applied': user_applied,
+    })
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        print("views: POST")
+
+        # create a form instance and populate it with data from the request:
+        form = OfferForm(request.POST, request.FILES)
+
+
+        # check whether it's valid:
+        if form.is_valid():
+            print("views: form valid")
+            # set owner and save listing
+            l = form.save(commit=False)
+            l.user = c_user
+            l.listing = r_listing
+            l.save();
+
+            # switch request type and redirect to feed (for now)
+            request.method = 'GET'
+            return HttpResponseRedirect('/listing/'+id)
+        else:
+            print form.errors
+
+    # if a GET (or any other method) we'll create a blank form
+    t = loader.get_template('App/new_offer.html')
     return HttpResponse(t.render(context))
 
 def browse_map(request):
