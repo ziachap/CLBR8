@@ -10,53 +10,167 @@
         border-radius: 10px;
     }
     </style>
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
+    <script>
+    $(document).ready(function () {
+      $('[data-toggle="offcanvas"]').click(function () {
+        $('.row-offcanvas').toggleClass('active')
+      });
+    });
+    </script>
+    <style>
+    .settings_box {
+        border: 1px solid lightgrey;
+        border-radius: 15px;
+        padding-top: 10px;
+        padding-bottom: 20px;
+    }
+
+    /*-------------- Off Canvas -------------*/
+    @media screen and (max-width: 767px) {
+      .row-offcanvas {
+        position: relative;
+        -webkit-transition: all .25s ease-out;
+             -o-transition: all .25s ease-out;
+                transition: all .25s ease-out;
+      }
+
+      .row-offcanvas-right {
+        right: 0;
+      }
+
+      .row-offcanvas-left {
+        left: 0;
+      }
+
+      .row-offcanvas-right
+      .sidebar-offcanvas {
+        right: -50%; /* 6 columns */
+      }
+
+      .row-offcanvas-left
+      .sidebar-offcanvas {
+        left: -50%; /* 6 columns */
+      }
+
+      .row-offcanvas-right.active {
+        right: 50%; /* 6 columns */
+      }
+
+      .row-offcanvas-left.active {
+        left: 50%; /* 6 columns */
+      }
+
+      .sidebar-offcanvas {
+        position: absolute;
+        top: 0;
+        width: 50%; /* 6 columns */
+      }
+    }
+    </style>
 {% endblock %}
 
 {% block content %}
 
     <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
         <br />
-        <!-- PROFILE BEGIN -->
+
+        <!-- INBOX NEW BEGIN -->
+
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="col-md-12">
 
-                <h1>My Inbox</h1>
+              <div class="row row-offcanvas row-offcanvas-left">
+                 <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+                 <h1>Inbox</h1>
+                 <h3><i class="fa fa-inbox"></i> Conversations ({{ c_conversations.count }})</h3>
+                  <div class="list-group">
+                    {% for conversation in c_conversations.all %}
+                        <a href="/inbox/{{ conversation.id }}" class="list-group-item {% if c_conversation == conversation %}active{% endif %}">
+                            {% for participant in conversation.participants.all %}
+                                <!--<img class="img-circle" src="{{ participant.profile.profile_pic.thumbnail.url }}" width="30px" />--> {{ participant.profile.artist_name }},
+                            {% endfor %}
+                        </a>
+                    {% endfor %}
+                  </div>
+                </div><!--/.sidebar-offcanvas-->
+                <div class="col-xs-12 col-sm-9 settings_box">
+                  <p class="visible-xs">
+                    <button type="button" class="btn btn-default btn-xs" data-toggle="offcanvas"><i class="fa fa-bars"></i> Menu</button>
+                </p>
 
-                <!-- CONVERSATIONS -->
-                {% if c_conversations %}
+                <!-- CONVO BEGIN -->
                 <div class="row">
                     <div class="col-md-12">
-                        <h3><i class="fa fa-inbox"></i> Conversations</h3>
-                        {% for conversation in c_conversations.all %}
-                        <div class="round_outline">
-                            <a href="/conversation/{{ conversation.id }}">
-                                <div class="row">
-                                    <div class="col-md-1">
-                                        <img class="img-rounded custom-img-rounded" src="" width="40px" />
-                                    </div>
-                                    <div class="col-md-9">
-                                        <h4>{{ conversation.message_set.all|first }}<br/><br/>
-                                            {% for participant in conversation.participants.all %}
-                                                <a href="/profile/{{ participant.username }}"><img class="img-circle" src="{{ participant.profile.profile_pic.thumbnail.url }}" width="30px" /> {{ participant.profile.artist_name }}</a>
-                                            {% endfor %}
 
-                                            {% for message in conversation.message_set.all %}
-                                                <!--<li><small>{{ message.content }}</small></li>-->
-                                            {% endfor %}
-                                        </h4>
+                        <!-- PROFILE HEADER -->
+                        <div class="row">
+
+                            <div class="col-md-12">
+
+                                <h2>
+                                    {% for participant in c_conversation.participants.all %}
+                                        <img class="img-circle" src="{{ participant.profile.profile_pic.thumbnail.url }}" width="50px" /> {{ participant.profile.artist_name }},
+                                    {% endfor %}
+                                    <br />
+                                </h2>
+
+                                <!--<small>
+                                    Conversation
+                                </small>-->
+                            </div>
+
+                        </div>
+                        <hr>
+
+                        <!-- MESSAGES -->
+                        {% if c_messages %}
+                        <div class="row">
+                            <div id="message-window-id" class="col-md-12 message-window">
+                                {% for message in c_messages %}
+                                <div class="round_outline">
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <a href="/profile/{{ message.sender.user.username }}/"><img class="img-rounded custom-img-rounded" src="{{ message.sender.profile_pic.thumbnail.url }}" width="50px" /></a>
+                                        </div>
+                                        <div class="col-md-11">
+                                            <h4><a href="/profile/{{ message.sender.user.username }}/"> {{ message.sender.artist_name }}</a> - <i class="fa fa-time"></i> <small>{{ message.date_created }}</small></h4>
+                                            {{ message.content }}
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
-                        </div>
-                        <br />
-                        {% endfor %}
+                                <br />
+                                {% endfor %}
+                            </div>
+                        </div><br />
+                        {% endif %}
+
+                        <!-- MESSAGE REPLY FORM -->
+                        <form id="new_message_form" method="post" action="/inbox/{{ c_conversation.id }}/" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-10">
+                                    {{ form.content.errors }}
+                                    <div class="input-group margin-bottom-sm">
+                                    <span class="input-group-addon"><i class="fa fa-align-left fa-fw"></i></span>
+                                    <textarea class="form-control" type="textarea" rows="5" name="content" placeholder="Type your message here">{{ form.content.value|default_if_none:"" }}</textarea>
+                                    </div><br />
+                                </div>
+                                <div class="col-md-2">
+                                    <CENTER><input class="btn btn-default btn-lg" type="submit" value="Send" /></CENTER>
+                                </div>
+                            </div>
+                        </form>
+
                     </div>
                 </div>
-                {% endif %}
+                <!-- CONVO END -->
+                </div><!--/.col-xs-12.col-sm-9-->
 
+              </div><!--/row-->
             </div>
         </div>
-        <!-- PROFILE END -->
+
     </div>
 {% endblock %}
 
@@ -80,6 +194,8 @@
               itemSelector: '.item',
               gutter: 5
             });
+            // Scroll to bottom of mesage window
+            $("#message-window-id").animate({ scrollTop: $('#message-window-id')[0].scrollHeight}, 500);
         });
     </script>
     <link href="{% static 'css/listing_packery.css' %}" rel="stylesheet">

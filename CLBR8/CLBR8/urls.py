@@ -29,7 +29,9 @@ urlpatterns = patterns('',
     url(r'^new_offer/([0-9]+)/$', views.new_offer, name='new_offer'),
     url(r'^browse/$', views.browse_map, name='browse_map'),
     url(r'^about/$', views.about, name='about'),
-    url(r'^inbox/$', views.inbox, name='inbox'),
+    #url(r'^inbox/$', views.inbox, name='inbox'), #OLD
+    url(r'^inbox/([0-9]+)/$', views.inbox, name='inbox'),
+    url(r'^inbox/$', views.inbox_default, name='inbox_default'),
     url(r'^conversation/([0-9]+)/$', views.conversation, name='conversation'),
 
     url(r'^settings_user/$', views.settings_user, name='settings_user'),

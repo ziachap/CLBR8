@@ -48,7 +48,7 @@ class ReviewAdmin(admin.ModelAdmin):
 
 class OfferAdmin(admin.ModelAdmin):
     list_display = ('id', 'listing', 'user', 'description')
-    fields = ('id', 'listing', 'user', 'description')
+    fields = ('listing', 'user', 'description')
 
 class ConversationAdmin(admin.ModelAdmin):
     list_display = ('id', )

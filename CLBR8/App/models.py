@@ -78,7 +78,7 @@ class Review(models.Model):
 
 class Offer(models.Model):
     id = models.AutoField(primary_key=True)
-    listing = models.ForeignKey(Listing, null=True, related_name='listing')
+    listing = models.ForeignKey(Listing, null=True)
     user = models.ForeignKey(User, null=True, related_name='user')
     description = models.TextField(max_length=500, null=True)
     def __str__(self):

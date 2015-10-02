@@ -34,7 +34,7 @@
                 <!-- LISTING HEADER -->
                 <div class="row">
                     <div class="col-md-3">
-                        <a class="popup-link" href="{{ r_listing.listing_pic.url }}">
+                        <a class="popup-link" href="src='{% if r_listing.listing_pic == "" or r_listing.listing_pic == Null %}{% static 'images/blank_user.jpg' %}{% else %}{{ r_listing.listing_pic.url }}{% endif %}'">
                             <img class="img-rounded custom-img-rounded"
                             {% if r_listing.listing_pic == "" or r_listing.listing_pic == Null %}
                                 {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
@@ -65,10 +65,10 @@
                         <!-- LISTING BUTTONS -->
                         {% if r_user == c_user %}
                             <a href="/edit_listing/{{ r_listing.id }}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Project</button></a>
+                            {% if r_listing.hidden %} <br /><br /><a href="#"><button class="btn btn-default"><i class="fa fa-undo"></i> Reopen Project</button></a>{% endif %}
                         {% else %}
-                            <a href="/follow/{{ r_user.username }}/"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Apply</button></a>
+                            <a href="#"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Apply</button></a>
                         {% endif %}
-
                     </div>
                 </div>
 
@@ -107,6 +107,7 @@
                                                 </div>
                                                 <div class="col-md-3 pull-right">
                                                     <a href="#"><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -168,7 +169,7 @@
                             <br /><div class="bg-info pad-15"><CENTER>You've applied for this project</CENTER></div>
                         {% elif r_user == c_user  %}
                             {% if r_offers %}
-                                <h3><i class="fa fa-star"></i> Offers ({{ r_offers.count }})</h3>
+                                <h3><i class="fa fa-male"></i> Offers ({{ r_offers.count }})</h3>
                                 {% for offer in r_offers %}
                                     <div class="row">
                                         <div class="col-md-12">

@@ -103,7 +103,7 @@
                                         <img class="img-rounded custom-img-rounded" src="{{ project.listing_pic.thumbnail.url }}" width="75px" />
                                     </div>
                                     <div class="col-md-9">
-                                        <h4>{{ project.title }}
+                                        <h4>{% if project.hidden %}<i class="fa fa-lock"></i>{% else %}<i class="fa fa-globe"></i>{% endif %} {{ project.title }}
                                         <br /><small>{{ project.description|truncatechars:80 }}</small></h4>
                                     </div>
                                 </div><br />

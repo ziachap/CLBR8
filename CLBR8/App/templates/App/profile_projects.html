@@ -92,8 +92,8 @@
                                         <img class="img-rounded custom-img-rounded" src="{{ project.listing_pic.thumbnail.url }}" width="105px" />
                                     </div>
                                     <div class="col-md-8">
-                                        <h4>{{ project.title }}
-                                        <br /><small>{{ project.description|truncatechars:120 }}</small></h4>
+                                        <h4>{% if project.hidden %}<i class="fa fa-lock"></i>{% else %}<i class="fa fa-globe"></i>{% endif %} {{ project.title }}
+                                        <br /><small>{% if project.hidden == false %}<i class="fa fa-male"></i> {{ project.offer_set.all|length }} - {% endif %}{{ project.description|truncatechars:110 }}</small></h4>
                                         <div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none"/></div>
                                     </div>
                                     <div class="col-md-2">

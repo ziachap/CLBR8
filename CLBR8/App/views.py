@@ -136,6 +136,9 @@ def profile(request, username):
     r_user = User.objects.get(username=username)
     # get recipient's recent 3 listings
     r_listing_all = Listing.objects.filter(owner=r_user, hidden=False)
+    if r_user == c_user:
+        # if your account, get hidden projects too
+        r_listing_all = Listing.objects.filter(owner=r_user)
     r_listing = list(reversed(r_listing_all))[:3]
     # get user's recent followers/following
     r_followers_all = Profile.objects.filter(following__in=[r_user])
@@ -206,7 +209,69 @@ def profile_projects(request, username):
 
     return HttpResponse(t.render(c))
 
-def inbox(request):
+def inbox_default(request):
+    # get current user
+    c_user = request.user
+    # get all c_user conversations
+    c_conversations = Conversation.objects.filter(participants__in=[c_user])
+    c_id = list(c_conversations.reverse()[:1])[0].id
+    return inbox(request, c_id)
+
+def inbox(request, id):
+
+    # get current user
+    c_user = request.user
+    # get all c_user conversations
+    c_conversations = Conversation.objects.filter(participants__in=[c_user]).reverse()
+
+    # get c_user target conversation
+    c_conversation = Conversation.objects.get(id=id)
+
+    # raise error if not in conversation
+    if Conversation.objects.filter(id=id, participants__in=[c_user]).exists() == False:
+        raise Http404("You cannot access this conversation")
+
+    # get messages for target convo
+    c_messages = c_conversation.message_set.all
+
+    form = MessageForm(request.POST)
+
+    # work out averages
+    t = loader.get_template('App/inbox.html')
+    c = RequestContext(request, {
+        'c_user': c_user,
+        'c_conversations': c_conversations,
+        'c_conversation': c_conversation,
+        'c_messages': c_messages,
+    })
+
+    print(request.POST)
+
+     # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        print("views: message POST")
+
+        # create a form instance and populate it with data from the request:
+        form = MessageForm(request.POST, request.FILES)
+
+        # check whether it's valid:
+        if form.is_valid():
+            print("views: message form valid")
+            # set owner and save listing
+            l = form.save(commit=False)
+            l.sender = c_user.profile
+            l.conversation = c_conversation
+            l.save();
+
+            # switch request type and redirect to browse map
+            request.method = 'GET'
+            return inbox(request, id)
+        else:
+            print form.errors
+
+    return HttpResponse(t.render(c))
+
+def inbox_old(request):
 
     # get current user
     c_user = request.user
@@ -457,7 +522,7 @@ def new_offer(request, id):
         user_applied = True
 
     # get form
-    form = OfferForm(request.POST)
+    form = OfferForm()
 
     # get the request's context.
     context = RequestContext(request, {
