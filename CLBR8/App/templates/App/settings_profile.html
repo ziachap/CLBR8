@@ -42,6 +42,11 @@
             <div class="col-xs-12 col-lg-6">
                 <h4>Social Connections</h4>
                 <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-globe fa-fw" style="color: darkgray;"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.web_link.name }}" placeholder="Website URL" value="{{ form.web_link.value|default_if_none:"" }}">
+                </div><br />
+
+                <div class="input-group margin-bottom-sm">
                 <span class="input-group-addon"><i class="fa fa-facebook fa-fw" style="color: royalblue;"></i></span>
                 <input class="form-control input-md" type="text" name="{{ form.fb_link.name }}" placeholder="Facebook URL" value="{{ form.fb_link.value|default_if_none:"" }}">
                 </div><br />

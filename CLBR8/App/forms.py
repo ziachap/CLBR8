@@ -1,4 +1,4 @@
-from App.models import Profile, Listing, Offer
+from App.models import *
 from django.contrib.auth.models import User
 from django import forms
 
@@ -21,7 +21,7 @@ class UserProfileForm(forms.ModelForm):
 class EditUserProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('artist_name', 'bio', 'fb_link', 'tw_link', 'sc_link', 'yt_link', 'profile_pic')
+        fields = ('artist_name', 'bio', 'web_link', 'fb_link', 'tw_link', 'sc_link', 'yt_link', 'profile_pic')
 
 class ListingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -40,3 +40,8 @@ class EditListingForm(forms.ModelForm):
     class Meta:
         model = Listing
         fields = ('title', 'price', 'description', 'genre', 'audio_file', 'address', 'longitude', 'latitude')
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ('content',)

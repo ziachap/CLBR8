@@ -12,8 +12,9 @@
 
     <title>KL // {% block title %}{% endblock %}</title>
 
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Font-Awesome CSS -->
     <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" >
     <!-- Bootstrap social CSS -->
@@ -29,6 +30,8 @@
     <link href="{% static 'css/carousel.css' %}" rel="stylesheet">
     <!-- Master style -->
     <link href="{% static 'css/master.css' %}" rel="stylesheet">
+    <link href="{% static 'raty/jquery.raty.css' %}" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 
     <!-- Brand logo rollover -->
     <script>
@@ -80,7 +83,17 @@
                 {% endif %}
                 {%  if c_user.is_authenticated %}
                 <li class="{% block new_project_active %}{% endblock %}"><a href="{% url 'new_listing' %}"><i class="fa fa-plus fa-fw"></i> New Project</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-bell fa-fw"></i>
+                    <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                    <li class="dropdown-header">Notifications</li>
+                    <li></li>
+                    </ul>
+                </li>
               {% endif %}
+
                 <li class="dropdown">
                   {%  if c_user.is_authenticated %}
 
@@ -97,8 +110,8 @@
                     <ul class="dropdown-menu">
                     <li class="dropdown-header">Hey {{ c_user.first_name }}!</li>
                     <li><a href="/profile/{{ c_user.username }}"><i class="fa fa-user fa-fw"></i> My Profile</a></li>
-                    <li><a href="#"><i class="fa fa-music fa-fw"></i> My Projects</a></li>
-                    <li><a href="#"><i class="fa fa-inbox fa-fw"></i> Inbox</a></li>
+                    <li><a href="/profile/{{ c_user.username }}/listings/"><i class="fa fa-music fa-fw"></i> My Projects</a></li>
+                    <li><a href="{% url 'inbox' %}"><i class="fa fa-inbox fa-fw"></i> Inbox</a></li>
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url 'settings_user' %}"><i class="fa fa-cog fa-fw"></i> Settings</a></li>
                     <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
@@ -153,7 +166,7 @@
     ================================================== -->
     <!-- Wrap the rest of the page in another container to center all the content. -->
 
-    <div class="container marketing">
+    <div class="container marketing bg-white">
       {% block content %}{% endblock %}
       {% block footer %}
       <hr>
@@ -169,13 +182,13 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
+
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
     <script src="{% static 'bootstrap/assets/js/vendor/holder.min.js' %}"></script>
     <!-- Audio Player -->
     <script src="{% static 'wavesurferjs/wavesurfer.min.js' %}"></script>
-    {% block audio_init %}{%  endblock %}
+
     {% comment %}<!-- Audio Player -->
     <script src="{% static 'audiojs/audiojs/audio.min.js' %}"></script>
     <!-- Initialize all audio.js content -->
@@ -210,8 +223,10 @@
         });
     });
     </script>
+    <script src="{% static 'raty/jquery.raty.js' %}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'bootstrap/assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+    {% block audio_init %}{%  endblock %}
     {% block scripts %}{% endblock %}
   </body>
 </html>

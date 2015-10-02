@@ -2,88 +2,213 @@
 {% load staticfiles %}
 {% block title %}{{ r_user.profile.artist_name }}'s Profile{% endblock %}
 
+{%  block head %}
+    <style>
+    .profile_listing {
+        padding: 15px;
+        border: 1px solid #e5e5e5;
+        border-radius: 10px;
+    }
+    </style>
+
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="{% static 'magnific-popup/magnific-popup.css' %}">
+    <!-- Magnific Popup core JS file -->
+    <script src="{% static 'magnific-popup/jquery.magnific-popup.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.popup-link').magnificPopup({
+                type: 'image',
+                zoom: {
+                    enabled: true,
+                    duration: 300,
+                    easing: 'ease-in-out',
+                    opener: function(openerElement) {
+                      return openerElement.is('img') ? openerElement : openerElement.find('img');
+                    }
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
+
 {% block content %}
 
     <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
         <br />
         <!-- PROFILE BEGIN -->
-        {% if r_user == c_user %}
-            <div class="row">
-            <div class="pull-right col-lg-3">
-                <a href="{% url 'settings_profile' %}"><button class="btn btn-default btn-md" ><i class="fa fa-pencil"></i> Edit Profile</button></a>
-            </div>
-            </div>
-        {% endif %}
-        <CENTER>
-            <p><img class="img-rounded custom-img-rounded"
-            {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
-            src="{% static 'images/blank_user.jpg' %}"
-            {% else %}
-            src="{{ r_user.profile.profile_pic.thumbnail.url }}"
-            {%  endif %}
-            alt="Profile Picture" width="200" height="200"></p>
-        <h1>{{ r_user.profile.artist_name }}
-
-        <p><small>{{ r_user.first_name }} {{ r_user.last_name }}</small></p></h1>
-        </CENTER>
-
         <div class="row">
-        <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">
-            {{ r_user.profile.bio|linebreaksbr }}
-        <!-- FOLLOWING -->
-        <h3>{{ r_user.profile.artist_name }} is following </h3>
-        <div class="row">
-            <div id="container">
-            {% for follower in r_user.profile.following.all %}
-                <div class="item">
-                <blockquote>
-                    <a href="/profile/{{ follower.profile.artist_name }}">
-                        <h4>{{ follower.profile.artist_name }}
-                       <small>{{ follower.profile.bio|truncatechars:36 }}</small></h4>
-                    </a>
-                </blockquote>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+                <!-- PROFILE HEADER -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <a class="popup-link" href="{{ r_user.profile.profile_pic.url }}">
+                            <img class="img-rounded custom-img-rounded"
+                                {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+                                src="{% static 'images/blank_user.jpg' %}"
+                                {% else %}
+                                src="{{ r_user.profile.profile_pic.thumbnail.url }}"
+                                {% endif %}
+                                alt="Profile Picture" width="160" height="160">
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h1>{{ r_user.profile.artist_name }}<br />
+                        <small>
+                            {% if r_user.first_name %}{{ r_user.first_name }} {{ r_user.last_name }} -{% endif %}
+                            {% if r_user.profile.producer %}Producer{% endif %}
+                            {% if r_user.profile.producer and r_user.profile.vocalist %} & {% endif %}
+                            {% if r_user.profile.vocalist %}Vocalist{% endif %}
+                        </small>
+                        <br /><small><i class="fa fa-music"></i> {{ r_listing_all.count }} <i class="fa fa-users"></i> {{ r_followers_all.count }} <i class="fa fa-star"></i> {{ r_reviews_all.count }}</small></h1>
+                    </div>
+
+                    <div class="col-md-3 pull-right">
+                        <!-- PROFILE BUTTONS -->
+                        {% if r_user == c_user %}
+                            <a href="{% url 'settings_profile' %}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Profile</button></a>
+                        {% elif r_user in c_user.profile.following.all %}
+                            <a href="/unfollow/{{ r_user.username }}/"><button class="btn btn-default btn-md active pull-right" ><i class="fa fa-minus"></i> Unfollow</button></a>
+                        {% else %}
+                            <a href="/follow/{{ r_user.username }}/"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Follow</button></a>
+                        {% endif %}
+                    </div>
                 </div>
-            {% endfor %}
-            </div>
-        </div>
-        <!-- LISTINGS -->
-        <h3>{{ r_user.profile.artist_name }}'s projects </h3>
-        <div class="row">
-            <div id="container">
-            {% for project in r_listing %}
-                <div class="item">
-                <blockquote>
-                    <a href="/listing/{{ project.id }}">
-                        <h4>{{ project.title }}
-                       <small>{{ project.description|truncatewords:20 }}</small></h4>
-                    </a>
-                    <div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none"/></div>
-                </blockquote>
+                <hr>
+
+                <!-- PROFILE DESCRIPTION -->
+                {% if r_user.first_name %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <CENTER><div id="rTotal"></div></CENTER><br />
+                        {{ r_user.profile.bio|linebreaksbr }}
+                    </div>
+                </div><hr>
+                {% endif %}
+
+                <!-- PROFILE DETAIL -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- PROFILE COL 1 -->
+                        <!-- LISTINGS -->
+                        <h3><i class="fa fa-music"></i> Open Projects </h3>
+                        {% for project in r_listing %}
+                        <div class="round_outline">
+                            <a href="/listing/{{ project.id }}">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <img class="img-rounded custom-img-rounded" src="{{ project.listing_pic.thumbnail.url }}" width="75px" />
+                                    </div>
+                                    <div class="col-md-9">
+                                        <h4>{{ project.title }}
+                                        <br /><small>{{ project.description|truncatechars:80 }}</small></h4>
+                                    </div>
+                                </div><br />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <CENTER><div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none"/></div></CENTER>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <br />
+                        {% endfor %}
+                        {% if r_listing_all.count > 3 %}<CENTER><a href="/profile/{{ r_user.username }}/listings/" class="">See all projects...</a></CENTER>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- PROFILE COL 2 -->
+                        <!-- FOLLOWERS -->
+                        {% if r_followers_all.all %}
+                            <h3><i class="fa fa-users"></i> Followers </h3>
+                            <div class="round_outline">
+                            {% for follower in r_followers_all.all %}
+                                    <a href="/profile/{{ follower.user.username }}">
+                                        <img class="img-rounded custom-img-rounded" src="{{ follower.profile_pic.thumbnail.url }}" title="{{ follower.artist_name }}" width="60px" />
+                                    </a>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                        <!-- FOLLOWING -->
+                        {% if r_following_all.all %}
+                            <h3><i class="fa fa-user"></i> Following </h3>
+                            <div class="round_outline">
+                            {% for follower in r_following_all.all %}
+                                    <a href="/profile/{{ follower.username }}">
+                                        <img class="img-rounded custom-img-rounded" src="{{ follower.profile.profile_pic.thumbnail.url }}" title="{{ follower.profile.artist_name }}" width="60px" />
+                                    </a>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
+                        <hr>
+                        <!-- SOCIAL MEDIA -->
+                        <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
+                        {% if r_user.profile.web_link %}
+                        <a href="{{ r_user.profile.web_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
+                        <i class="fa fa-globe fa-2x"></i>
+                        </a>{% endif %}
+                        {% if r_user.profile.fb_link %}
+                        <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
+                        <i class="fa fa-facebook fa-2x"></i>
+                        </a>{% endif %}
+                        {% if r_user.profile.tw_link %}
+                        <a href="{{ r_user.profile.tw_link }}" target="_blank" class="btn btn-social-icon btn-twitter">
+                        <i class="fa fa-twitter fa-2x"></i>
+                        </a>{% endif %}
+                        {% if r_user.profile.sc_link %}
+                        <a href="{{ r_user.profile.sc_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+                        <i class="fa fa-soundcloud fa-2x"></i>
+                        </a>{% endif %}
+                        {% if r_user.profile.yt_link %}
+                        <a href="{{ r_user.profile.yt_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+                        <i class="fa fa-youtube fa-2x"></i>
+                        </a>{% endif %}
+                        {% if r_user.email %}
+                        <a href="mailto:{{ r_user.email }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
+                        <i class="fa fa-at fa-2x"></i>
+                        </a>{% endif %}
+
+                    </div>
                 </div>
-            {% endfor %}
+
+                <!-- PROFILE REVIEWS -->
+                {% if r_reviews %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3><i class="fa fa-star"></i> Reviews</h3>
+                        {% for review in r_reviews %}
+                        <div class="round_outline">
+                            <a href="#">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img class="img-rounded custom-img-rounded" src="{{ review.author.profile_pic.thumbnail.url }}" width="110px" />
+                                    </div>
+                                    <div class="col-md-7">
+                                        <h4>{{ review.summary }}
+                                        <br /><small><i class="fa fa-user"></i> <a href="/profile/{{ review.author.user.username }}">{{ review.author.artist_name }}</a></small>
+                                        <br /><small>{{ review.description|truncatechars:180 }}</small>
+                                        </h4>
+                                    </div>
+                                    <div class="col-md-3">
+                                        Technical Ability: <div id="{{ review.id }}_r1"></div>
+                                        Creative Ability: <div id="{{ review.id }}_r2"></div>
+                                        Reliability: <div id="{{ review.id }}_r3"></div>
+                                    </div>
+                                </div><br />
+                            </a>
+                        </div>
+                        <br />
+                        {% endfor %}
+                        {% if r_reviews_all.count > 3 %}<CENTER><a href="#" class="">See all reviews...</a></CENTER>{% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
             </div>
         </div>
-        <hr>
-        <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
-        <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
-        <i class="fa fa-facebook fa-2x"></i>
-        </a>
-        <a href="{{ r_user.profile.tw_link }}" target="_blank" class="btn btn-social-icon btn-twitter">
-        <i class="fa fa-twitter fa-2x"></i>
-        </a>
-        <a href="{{ r_user.profile.sc_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
-        <i class="fa fa-soundcloud fa-2x"></i>
-        </a>
-        <a href="{{ r_user.profile.yt_link }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
-        <i class="fa fa-youtube fa-2x"></i>
-        </a>
-        <a href="mailto:{{ r_user.email }}" target="_blank" class="btn btn-social-icon btn-soundcloud">
-        <i class="fa fa-envelope-o fa-2x"></i>
-        </a>
-
-        </div>
-        </div>
-
         <!-- PROFILE END -->
     </div>
 {% endblock %}
@@ -92,26 +217,85 @@
     <script src="{% static 'packery/packery.pkgd.min.js' %}"></script>
     <script src="{% static 'draggability/draggabilly.pkgd.min.js' %}"></script>
     <script>
+        // PACKERY ------------
         var $container = $('#container').packery({
-          columnWidth: 80
+          columnWidth: 70,
+          rowHeight: 65
         });
-
         $container.find('.item').each( function( i, itemElem ) {
           // make element draggable with Draggabilly
           var draggie = new Draggabilly( itemElem );
           // bind Draggabilly events to Packery
           $container.packery( 'bindDraggabillyEvents', draggie );
         });
-
         $(window).load(function() {
             $container.packery({
               itemSelector: '.item',
               gutter: 5
             });
         });
+
+        // STAR RATINGS ------------
+        $(window).load(function() {
+        $('#rTotal').raty({
+                cancel    : true,
+                cancelOff : 'cancel-off.png',
+                cancelOn  : 'cancel-on.png',
+                half      : true,
+                size      : 24,
+                starHalf  : 'star-half.png',
+                starOff   : 'star-off.png',
+                starOn    : 'star-on.png',
+                path      : '{{ STATIC_URL }}/static/raty/images', // <-- or wherever your raty images are
+                readOnly: true,
+                score: {{ r_rating_all }}
+        });
+        {% for review in r_reviews %}
+            $('#{{ review.id }}_r1').raty({
+                cancel    : true,
+                cancelOff : 'cancel-off.png',
+                cancelOn  : 'cancel-on.png',
+                half      : true,
+                size      : 24,
+                starHalf  : 'star-half.png',
+                starOff   : 'star-off.png',
+                starOn    : 'star-on.png',
+                path      : '{{ STATIC_URL }}/static/raty/images', // <-- or wherever your raty images are
+                readOnly: true,
+                score: {{ review.rating_1 }}
+            });
+            $('#{{ review.id }}_r2').raty({
+                cancel    : true,
+                cancelOff : 'cancel-off.png',
+                cancelOn  : 'cancel-on.png',
+                half      : true,
+                size      : 24,
+                starHalf  : 'star-half.png',
+                starOff   : 'star-off.png',
+                starOn    : 'star-on.png',
+                path      : '{{ STATIC_URL }}/static/raty/images', // <-- or wherever your raty images are
+                readOnly: true,
+                score: {{ review.rating_2 }}
+            });
+            $('#{{ review.id }}_r3').raty({
+                cancel    : true,
+                cancelOff : 'cancel-off.png',
+                cancelOn  : 'cancel-on.png',
+                half      : true,
+                size      : 24,
+                starHalf  : 'star-half.png',
+                starOff   : 'star-off.png',
+                starOn    : 'star-on.png',
+                path      : '{{ STATIC_URL }}/static/raty/images', // <-- or wherever your raty images are
+                readOnly: true,
+                score: {{ review.rating_3 }}
+            });
+        {% endfor %}
+        });
     </script>
     <link href="{% static 'css/listing_packery.css' %}" rel="stylesheet">
     <style type="text/css">
         .item:hover { background-color: #FBFBFB; }
+        .item { width: 70px; }
     </style>
 {% endblock %}

@@ -1,0 +1,271 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ r_listing.title }}{% endblock %}
+
+{% block content %}
+<div class="blank_page_content"  xmlns="http://www.w3.org/1999/html">
+        <br />
+        <!-- PROFILE BEGIN -->
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+                <!-- PROFILE HEADER -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <a class="popup-link" href="{{ r_user.profile.profile_pic.url }}">
+                            <img class="img-rounded custom-img-rounded"
+                                {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+                                src="{% static 'images/blank_user.jpg' %}"
+                                {% else %}
+                                src="{{ r_user.profile.profile_pic.thumbnail.url }}"
+                                {% endif %}
+                                alt="Profile Picture" width="160" height="160">
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h1>{{ r_user.profile.artist_name }}<br />
+                        <small>
+                            {% if r_user.first_name %}{{ r_user.first_name }} {{ r_user.last_name }} -{% endif %}
+                            {% if r_user.profile.producer %}Producer{% endif %}
+                            {% if r_user.profile.producer and r_user.profile.vocalist %} & {% endif %}
+                            {% if r_user.profile.vocalist %}Vocalist{% endif %}
+                        </small>
+                        <br /><small><i class="fa fa-music"></i> {{ r_listing_all.count }} <i class="fa fa-users"></i> {{ r_followers_all.count }} <i class="fa fa-star"></i> {{ r_reviews_all.count }}</small></h1>
+                    </div>
+
+                    <div class="col-md-3 pull-right">
+                        <!-- PROFILE BUTTONS -->
+                        {% if r_user == c_user %}
+                            <a href="{% url 'settings_profile' %}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Profile</button></a>
+                        {% elif r_user in c_user.profile.following.all %}
+                            <a href="#"><button class="btn btn-default btn-md active pull-right" ><i class="fa fa-minus"></i> Unfollow</button></a>
+                        {% else %}
+                            <a href="/follow/{{ r_user.username }}/"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Follow</button></a>
+                        {% endif %}
+
+                    </div>
+                </div>
+                <hr>
+
+                <!-- PROFILE DESCRIPTION -->
+                {% if r_user.first_name %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <CENTER><div id="rTotal"></div></CENTER><br />
+                        {{ r_user.profile.bio|linebreaksbr }}
+                    </div>
+                </div><hr>
+                {% endif %}
+
+                <!-- PROFILE DETAIL -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- PROFILE COL 1 -->
+
+                        </div>
+
+                    <div class="col-md-6">
+
+
+                    </div>
+                </div>
+
+                <!-- PROFILE REVIEWS -->
+                {% if r_reviews %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3><i class="fa fa-star"></i> Reviews</h3>
+                        {% if user_applied %}
+                            <div class="bg-info pad-15"><CENTER>You've applied for this project</CENTER></div>
+                        {% elif r_user == c_user  %}
+                            {% if r_offers %}
+                                <br /><b>Offers: {{ r_offers.count }}</b>
+                                {% for offer in r_offers %}
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="bg-info pad-15">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <a href="/profile/{{ offer.user.username }}">
+                                                            <img class="img-circle" src="{{ offer.user.profile.profile_pic.thumbnail.url }}" width="30px" /> {{ offer.user.profile.artist_name }}</a> - {{ offer.description }}
+                                                    </div>
+                                                    <div class="col-md-3 pull-right">
+                                                        <a href=""><button class="btn btn-default"><i class="fa fa-check"></i> Accept Offer</button></a><br /><br />
+                                                        <a href=""><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><br />
+                                {% endfor %}
+                            {% else %}
+                                <br /><b>No one has applied for your project yet</b>
+                            {% endif %}
+                        {% else %}
+                            <CENTER><a href="/new_offer/{{ r_listing.id }}"><button class="btn btn-default btn-lg">Apply for this project</button></a></CENTER>
+                        {%  endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+        <!-- PROFILE END -->
+
+
+        <br /><br /><br /><br /><div class="row">
+        <!-- LISTING BEGIN -->
+        {% if r_user == c_user %}
+
+            <div class="pull-right col-lg-3">
+                <a href="/edit_listing/{{ r_listing.id }}"><button class="btn btn-default btn-md" ><i class="fa fa-pencil"></i> Edit Project</button></a>
+            </div>
+        {% endif %}
+        <CENTER>
+            <p>
+            <img class="img-rounded custom-img-rounded"
+            {% if r_listing.listing_pic == "" or r_listing.listing_pic == Null %}
+                {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+                    src="{% static 'images/blank_user.jpg' %}"
+                {% else %}
+                    src="{{ r_user.profile.profile_pic.thumbnail.url }}"
+                {% endif %}
+            {% else %}
+                src="{{ r_listing.listing_pic.thumbnail.url }}"
+            {%  endif %}
+            alt="Profile Picture" width="200" height="200">
+            <img class="img-rounded custom-img-rounded"
+                    src="https://maps.googleapis.com/maps/api/staticmap?center={{ r_listing.latitude }},{{ r_listing.longitude }}&zoom=13&size=200x200&maptype=roadmap&markers=color:red%7C%7C{{ r_listing.latitude }},{{ r_listing.longitude }}"
+                    alt="Map" width="200" height="200">
+            </p>
+        <h1>{{ r_listing.title }}
+        <p><small>
+             <a href="/profile/{{ r_user.username }}"><img class="img-circle" src="{{ r_user.profile.profile_pic.thumbnail.url }}" width="35px" height="35px"> {{ r_user.profile.artist_name }}</a>
+            <i class="fa fa-gbp fa-fw"></i>{% if r_listing.price == 0 %}No Payment{% else %}{{ r_listing.price }}{% endif %}
+            <i class="fa fa-music fa-fw"></i> {{ r_listing.genre }}
+            <i class="fa fa-map-marker fa-fw"></i> {{ r_listing.address }}
+        </small></p></h1>
+        </CENTER>
+        <div class="row">
+        <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">
+            <!-- AUDIO PLAYER BEGIN -->
+            <table border=0 style="width: 100%">
+            <tbody>
+                <tr>
+                  <td width="1">
+                    <button class="btn btn-default btn-sm" onclick="wavesurfer.playPause();"><i id="audio_button" class="fa fa-spinner fa-spin fa-fw fa-2x"></i></button>
+                  </td>
+                  <td width="*">
+                    <div id="wave"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- AUDIO PLAYER END -->
+            <hr>
+            <br />{{ r_listing.description|linebreaksbr }}
+
+            <br /><br />
+            {% if user_applied %}
+                <div class="bg-info pad-15"><CENTER>You've applied for this project</CENTER></div>
+            {% elif r_user == c_user  %}
+                {% if r_offers %}
+                    <br /><b>Offers: {{ r_offers.count }}</b>
+                    {% for offer in r_offers %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="bg-info pad-15">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <a href="/profile/{{ offer.user.username }}">
+                                                <img class="img-circle" src="{{ offer.user.profile.profile_pic.thumbnail.url }}" width="30px" /> {{ offer.user.profile.artist_name }}</a> - {{ offer.description }}
+                                        </div>
+                                        <div class="col-md-3 pull-right">
+                                            <a href=""><button class="btn btn-default"><i class="fa fa-check"></i> Accept Offer</button></a><br /><br />
+                                            <a href=""><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div><br />
+                    {% endfor %}
+                {% else %}
+                    <br /><b>No one has applied for your project yet</b>
+                {% endif %}
+            {% else %}
+                <CENTER><a href="/new_offer/{{ r_listing.id }}"><button class="btn btn-default btn-lg">Apply for this project</button></a></CENTER>
+            {%  endif %}
+            <hr>
+            <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
+            <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
+            <i class="fa fa-facebook fa-2x"></i>
+            </a>
+            <br />
+        </div>
+        </div>
+
+        <!-- LISTING END -->
+    </div>
+</div>
+{% endblock %}
+
+{% block audio_init %}
+    <!-- Create audio player for each project -->
+    <script>
+        var button = document.getElementById("audio_button");
+        var wavesurfer = Object.create(WaveSurfer);
+
+        wavesurfer.init({
+            container: document.querySelector('#wave'),
+            waveColor: 'LightSteelBlue',
+            progressColor: 'CornflowerBlue',
+            height: '60',
+            normalize: 'true'
+        });
+        wavesurfer.load('{{ r_listing.audio_file.url }}');
+
+        wavesurfer.on('ready', function () {
+            button.setAttribute('class', 'fa fa-play fa-fw fa-2x')
+        });
+        wavesurfer.on('pause', function () {
+            button.setAttribute('class', 'fa fa-play fa-fw fa-2x')
+        });
+        wavesurfer.on('play', function () {
+            button.setAttribute('class', 'fa fa-pause fa-fw fa-2x')
+        });
+
+        window.onresize = function(event) {
+        }
+
+    </script>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'packery/packery.pkgd.min.js' %}"></script>
+    <script src="{% static 'draggability/draggabilly.pkgd.min.js' %}"></script>
+    <script>
+        var $container = $('#container').packery({
+          columnWidth: 80
+        });
+
+        $container.find('.item').each( function( i, itemElem ) {
+          // make element draggable with Draggabilly
+          var draggie = new Draggabilly( itemElem );
+          // bind Draggabilly events to Packery
+          $container.packery( 'bindDraggabillyEvents', draggie );
+        });
+
+        $(window).load(function() {
+            $container.packery({
+              itemSelector: '.item',
+              gutter: 5
+            });
+        });
+    </script>
+    <link href="{% static 'css/listing_packery.css' %}" rel="stylesheet">
+    <style type="text/css">
+        .item:hover { background-color: #FBFBFB; }
+    </style>
+{% endblock %}

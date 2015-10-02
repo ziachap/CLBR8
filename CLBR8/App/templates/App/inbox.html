@@ -1,0 +1,90 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ c_user.profile.artist_name }}'s Inbox{% endblock %}
+
+{%  block head %}
+    <style>
+    .profile_listing {
+        padding: 15px;
+        border: 1px solid #e5e5e5;
+        border-radius: 10px;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
+        <br />
+        <!-- PROFILE BEGIN -->
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+                <h1>My Inbox</h1>
+
+                <!-- CONVERSATIONS -->
+                {% if c_conversations %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3><i class="fa fa-inbox"></i> Conversations</h3>
+                        {% for conversation in c_conversations.all %}
+                        <div class="round_outline">
+                            <a href="/conversation/{{ conversation.id }}">
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <img class="img-rounded custom-img-rounded" src="" width="40px" />
+                                    </div>
+                                    <div class="col-md-9">
+                                        <h4>{{ conversation.message_set.all|first }}<br/><br/>
+                                            {% for participant in conversation.participants.all %}
+                                                <a href="/profile/{{ participant.username }}"><img class="img-circle" src="{{ participant.profile.profile_pic.thumbnail.url }}" width="30px" /> {{ participant.profile.artist_name }}</a>
+                                            {% endfor %}
+
+                                            {% for message in conversation.message_set.all %}
+                                                <!--<li><small>{{ message.content }}</small></li>-->
+                                            {% endfor %}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <br />
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+        <!-- PROFILE END -->
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'packery/packery.pkgd.min.js' %}"></script>
+    <script src="{% static 'draggability/draggabilly.pkgd.min.js' %}"></script>
+    <script>
+        // PACKERY ------------
+        var $container = $('#container').packery({
+          columnWidth: 70,
+          rowHeight: 65
+        });
+        $container.find('.item').each( function( i, itemElem ) {
+          // make element draggable with Draggabilly
+          var draggie = new Draggabilly( itemElem );
+          // bind Draggabilly events to Packery
+          $container.packery( 'bindDraggabillyEvents', draggie );
+        });
+        $(window).load(function() {
+            $container.packery({
+              itemSelector: '.item',
+              gutter: 5
+            });
+        });
+    </script>
+    <link href="{% static 'css/listing_packery.css' %}" rel="stylesheet">
+    <style type="text/css">
+        .item:hover { background-color: #FBFBFB; }
+        .item { width: 70px; }
+    </style>
+{% endblock %}

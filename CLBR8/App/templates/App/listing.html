@@ -2,85 +2,205 @@
 {% load staticfiles %}
 {% block title %}{{ r_listing.title }}{% endblock %}
 
+{%  block head %}
+<!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="{% static 'magnific-popup/magnific-popup.css' %}">
+    <!-- Magnific Popup core JS file -->
+    <script src="{% static 'magnific-popup/jquery.magnific-popup.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.popup-link').magnificPopup({
+                type: 'image',
+                zoom: {
+                    enabled: true,
+                    duration: 300,
+                    easing: 'ease-in-out',
+                    opener: function(openerElement) {
+                      return openerElement.is('img') ? openerElement : openerElement.find('img');
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
 <div class="blank_page_content"  xmlns="http://www.w3.org/1999/html">
-        <br /><div class="row">
+        <br />
         <!-- LISTING BEGIN -->
-        {% if r_user == c_user %}
-
-            <div class="pull-right col-lg-3">
-                <a href="/edit_listing/{{ r_listing.id }}"><button class="btn btn-default btn-md" ><i class="fa fa-pencil"></i> Edit Project</button></a>
-            </div>
-        {% endif %}
-        <CENTER>
-            <p>
-            <img class="img-rounded custom-img-rounded"
-            {% if r_listing.listing_pic == "" or r_listing.listing_pic == Null %}
-                {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
-                    src="{% static 'images/blank_user.jpg' %}"
-                {% else %}
-                    src="{{ r_user.profile.profile_pic.thumbnail.url }}"
-                {% endif %}
-            {% else %}
-                src="{{ r_listing.listing_pic.thumbnail.url }}"
-            {%  endif %}
-            alt="Profile Picture" width="200" height="200">
-            <img class="img-rounded custom-img-rounded"
-                    src="https://maps.googleapis.com/maps/api/staticmap?center={{ r_listing.latitude }},{{ r_listing.longitude }}&zoom=13&size=200x200&maptype=roadmap&markers=color:red%7C%7C{{ r_listing.latitude }},{{ r_listing.longitude }}"
-                    alt="Map" width="200" height="200">
-            </p>
-        <h1>{{ r_listing.title }}
-        <p><small>
-            <i class="fa fa-user fa-fw"></i> <a href="/profile/{{ r_user.username }}">{{ r_user.profile.artist_name }}</a>
-            <i class="fa fa-gbp fa-fw"></i>{% if r_listing.price == 0 %}No Payment{% else %}{{ r_listing.price }}{% endif %}
-            <i class="fa fa-music fa-fw"></i> {{ r_listing.genre }}
-            <i class="fa fa-map-marker fa-fw"></i> {{ r_listing.address }}
-        </small></p></h1>
-        </CENTER>
         <div class="row">
-        <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">
-            <!-- AUDIO PLAYER BEGIN -->
-            <table border=0 style="width: 100%">
-            <tbody>
-                <tr>
-                  <td width="1">
-                    <button class="btn btn-default btn-sm" onclick="wavesurfer.playPause();"><i id="audio_button" class="fa fa-spinner fa-spin fa-fw fa-2x"></i></button>
-                  </td>
-                  <td width="*">
-                    <div id="wave"></div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <!-- AUDIO PLAYER END -->
-            <hr>
-            <br />{{ r_listing.description|linebreaksbr }}
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12 col-sm-offset-0">
 
-            <br />
-            {% if user_applied %}
-                <div class="bg-info pad-15"><CENTER>You've applied for this project</CENTER></div>
-            {% elif r_user == c_user  %}
-                {% if r_offers %}
-                    <br /><b>Offers: {{ r_offers.count }}</b>
-                    {% for offer in r_offers %}
-                        <blockquote><div class="bg-info pad-15"><li>{{ offer.user }} - {{ offer.description }}</li></div></blockquote>
-                    {% endfor %}
-                {% else %}
-                    <br /><b>No one has applied for your project yet</b>
+                <!-- LISTING HEADER -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <a class="popup-link" href="{{ r_listing.listing_pic.url }}">
+                            <img class="img-rounded custom-img-rounded"
+                            {% if r_listing.listing_pic == "" or r_listing.listing_pic == Null %}
+                                {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+                                    src="{% static 'images/blank_user.jpg' %}"
+                                {% else %}
+                                    src="{{ r_user.profile.profile_pic.thumbnail.url }}"
+                                {% endif %}
+                            {% else %}
+                                src="{{ r_listing.listing_pic.thumbnail.url }}"
+                            {%  endif %}
+                            alt="Profile Picture" width="160" height="160">
+                        </a>
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <h1>{{ r_listing.title }}<br />
+                        <small>
+                            <a href="/profile/{{ r_listing.owner.username }}"><img class="img-circle" src="{{ r_listing.owner.profile.profile_pic.thumbnail.url }}" width="32px" height="32px"> {{ r_listing.owner.profile.artist_name }}</a>
+                            <i class="fa fa-gbp fa-fw"></i>{% if r_listing.price == 0 %}No Payment{% else %}{{ r_listing.price }}{% endif %}
+                            <br /><i class="fa fa-music fa-fw"></i> {{ r_listing.genre }}
+                            {% if r_listing.hidden %} <i class="fa fa-lock fa-fw"></i> Closed{% else %} <i class="fa fa-globe fa-fw"></i> Open{% endif %}
+
+                        </small></h1>
+                    </div>
+
+                    <div class="col-md-3 pull-right">
+                        <!-- LISTING BUTTONS -->
+                        {% if r_user == c_user %}
+                            <a href="/edit_listing/{{ r_listing.id }}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Project</button></a>
+                        {% else %}
+                            <a href="/follow/{{ r_user.username }}/"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Apply</button></a>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <!-- LISTING ACCEPTED OFFER -->
+                {% if r_listing.employee != null and r_listing.hidden %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            {% if r_listing.owner == c_user %}
+                            <h3><i class="fa fa-male"></i> You have accepted {{ r_listing.employee.user.profile.artist_name }}'s offer</h3>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="bg-info pad-15">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <a href="/profile/{{ r_listing.employee.user.username }}">
+                                                        <img class="img-circle" src="{{ r_listing.employee.profile_pic.thumbnail.url }}" width="30px" /> {{ r_listing.employee.artist_name }}</a> - {{ r_listing.employee.bio|truncatechars:52 }}
+                                                </div>
+                                                <div class="col-md-3 pull-right">
+                                                    <a href="#"><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <br />
+                            {% else %}
+                            <h3><i class="fa fa-check"></i> {{ r_listing.owner.profile.artist_name }} has accepted your offer</h3>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="bg-info pad-15">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <a href="/profile/{{ r_listing.owner.username }}">
+                                                        <img class="img-circle" src="{{ r_listing.owner.profile.profile_pic.thumbnail.url }}" width="30px" /> {{ r_listing.owner.profile.artist_name }}</a> - {{ r_listing.owner.profile.bio|truncatechars:52 }}
+                                                </div>
+                                                <div class="col-md-3 pull-right">
+                                                    <a href="#"><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <br />
+                            {% endif %}
+                        </div>
+                    </div>
                 {% endif %}
-            {% else %}
-                <CENTER><a href="/new_offer/{{ r_listing.id }}"><button class="btn btn-default btn-lg">Apply for this project</button></a></CENTER>
-            {%  endif %}
-            <hr>
-            <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
-            <a href="{{ r_user.profile.fb_link }}" target="_blank" class="btn btn-social-icon btn-facebook">
-            <i class="fa fa-facebook fa-2x"></i>
-            </a>
-            <br />
-        </div>
-        </div>
+                <hr>
 
+                <!-- LISTING PLAYER -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- AUDIO PLAYER BEGIN -->
+                        <table border=0 style="width: 100%">
+                        <tbody>
+                            <tr>
+                              <td width="1">
+                                <button class="btn btn-default btn-sm" onclick="wavesurfer.playPause();"><i id="audio_button" class="fa fa-spinner fa-spin fa-fw fa-2x"></i></button>
+                              </td>
+                              <td width="*">
+                                <div id="wave"></div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table><br />
+                    </div>
+                </div><hr>
+
+                <!-- LISTING DETAIL -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- PROFILE COL 1 -->
+                        <h3><i class="fa fa-align-left fa-fw"></i> Description</h3><br />
+                        {{ r_listing.description|linebreaksbr }}
+                        <br />
+                    </div>
+
+                    <div class="col-md-6">
+                        <h3><i class="fa fa-map-marker fa-fw"></i> Location</h3><br />
+
+                        <CENTER>
+                            <img class="img"
+                            src="https://maps.googleapis.com/maps/api/staticmap?center={{ r_listing.latitude }},{{ r_listing.longitude }}&zoom=13&size=300x300&maptype=roadmap&markers=color:red%7C%7C{{ r_listing.latitude }},{{ r_listing.longitude }}"
+                            alt="Map" width="300" height="300">
+                            <br /><br />{{ r_listing.address }}
+                        </CENTER>
+
+                    </div>
+                </div>
+
+                <!-- LISTING OFFERS -->
+                {% if r_listing.hidden == False %}
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if user_applied %}
+                            <br /><div class="bg-info pad-15"><CENTER>You've applied for this project</CENTER></div>
+                        {% elif r_user == c_user  %}
+                            {% if r_offers %}
+                                <h3><i class="fa fa-star"></i> Offers ({{ r_offers.count }})</h3>
+                                {% for offer in r_offers %}
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="bg-info pad-15">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <a href="/profile/{{ offer.user.username }}">
+                                                            <img class="img-circle" src="{{ offer.user.profile.profile_pic.thumbnail.url }}" width="30px" /> {{ offer.user.profile.artist_name }}</a> - {{ offer.description }}
+                                                    </div>
+                                                    <div class="col-md-3 pull-right">
+                                                        <a href="/accept_offer/{{ r_listing.id}}/{{ offer.user.username }}"><button class="btn btn-default"><i class="fa fa-check"></i> Accept Offer</button></a><br /><br />
+                                                        <a href="#"><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><br />
+                                {% endfor %}
+                            {% else %}
+                                <br /><b>No one has applied for your project yet</b>
+                            {% endif %}
+                        {% else %}
+                            <br /><CENTER><a href="/new_offer/{{ r_listing.id }}"><button class="btn btn-default btn-lg">Apply for this project</button></a></CENTER>
+                        {%  endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
         <!-- LISTING END -->
+
     </div>
 </div>
 {% endblock %}
