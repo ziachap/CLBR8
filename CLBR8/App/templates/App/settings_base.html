@@ -1,0 +1,92 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}Settings{% endblock %}
+
+{% block head %}
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
+    <script>
+    $(document).ready(function () {
+      $('[data-toggle="offcanvas"]').click(function () {
+        $('.row-offcanvas').toggleClass('active')
+      });
+    });
+    </script>
+    <style>
+    .settings_box {
+        border: 1px solid lightgrey;
+        border-radius: 15px;
+        padding-top: 10px;
+        padding-bottom: 20px;
+    }
+
+    /*-------------- Off Canvas -------------*/
+    @media screen and (max-width: 767px) {
+      .row-offcanvas {
+        position: relative;
+        -webkit-transition: all .25s ease-out;
+             -o-transition: all .25s ease-out;
+                transition: all .25s ease-out;
+      }
+
+      .row-offcanvas-right {
+        right: 0;
+      }
+
+      .row-offcanvas-left {
+        left: 0;
+      }
+
+      .row-offcanvas-right
+      .sidebar-offcanvas {
+        right: -50%; /* 6 columns */
+      }
+
+      .row-offcanvas-left
+      .sidebar-offcanvas {
+        left: -50%; /* 6 columns */
+      }
+
+      .row-offcanvas-right.active {
+        right: 50%; /* 6 columns */
+      }
+
+      .row-offcanvas-left.active {
+        left: 50%; /* 6 columns */
+      }
+
+      .sidebar-offcanvas {
+        position: absolute;
+        top: 0;
+        width: 50%; /* 6 columns */
+      }
+    }
+    </style>
+{%  endblock %}
+
+{% block content %}
+<div class="blank_page_content">
+
+    <div class="container">
+      <h1>Settings</h1><br />
+      <div class="row row-offcanvas row-offcanvas-left">
+         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+          <div class="list-group">
+            <a href="{% url 'settings_user' %}" class="list-group-item {% block settings_user_active %}{% endblock %}">Account</a>
+            <a href="{% url 'settings_profile' %}" class="list-group-item {% block settings_profile_active %}{% endblock %}">Profile</a>
+            <a href="#" class="list-group-item">Projects</a>
+          </div>
+        </div><!--/.sidebar-offcanvas-->
+        <div class="col-xs-12 col-sm-9 settings_box">
+          <p class="visible-xs">
+            <button type="button" class="btn btn-default btn-xs" data-toggle="offcanvas"><i class="fa fa-bars"></i> Menu</button>
+          </p>
+
+            {% block settings_form %}{% endblock %}
+        </div><!--/.col-xs-12.col-sm-9-->
+
+      </div><!--/row-->
+
+    </div>
+</div>
+<br />
+{% endblock %}

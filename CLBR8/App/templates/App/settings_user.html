@@ -1,0 +1,63 @@
+{% extends "App/settings_base.html" %}
+{% load staticfiles %}
+{% block title %}Account Settings{% endblock %}
+
+{% block settings_user_active %}active{% endblock %}
+
+{% block settings_form %}
+    <div class="row">
+        <div class="col-xs-12 col-lg-11">
+            <h2>Account Settings</h2><br />
+        </div><!--/.col-xs-6.col-lg-4-->
+    </div>
+
+    <form id="settings_user_form" method="post" action="/settings_user/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-xs-12 col-lg-6">
+                <h4>Username</h4>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.username.name }}" placeholder="Username" value="{{ form.username.value|default_if_none:"" }}">
+                </div><br />
+                <h4>First Name</h4>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.first_name.name }}" placeholder="First Name" value="{{ form.first_name.value|default_if_none:"" }}">
+                </div><br />
+                <h4>Last Name</h4>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.last_name.name }}" placeholder="Last Name" value="{{ form.last_name.value|default_if_none:"" }}">
+                </div><br />
+            </div><!--/.col-xs-6.col-lg-4-->
+            <div class="col-xs-12 col-lg-6">
+                <h4>Email Address</h4>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-at fa-fw"></i></span>
+                <input class="form-control input-md" type="text" name="{{ form.email.name }}" placeholder="Email Address" value="{{ form.email.value|default_if_none:"" }}">
+                </div><br />
+
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                <input class="form-control input-md" type="password" name="" placeholder="Current Password" value="">
+                </div><br />
+
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-unlock-alt fa-fw"></i></span>
+                <input class="form-control input-md" type="password" name="" placeholder="New Password" size="25">
+                </div><br />
+
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-unlock-alt fa-fw"></i></span>
+                <input class="form-control input-md" type="password" name="" placeholder="Confirm New Password" size="25">
+                </div><br />
+            </div>
+        </div>
+        <div class="row">
+            <CENTER>
+                <input class="btn btn-default" type="submit" value="Save Changes" />
+            </CENTER>
+        </div>
+    </form>
+{% endblock %}

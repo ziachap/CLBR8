@@ -1,0 +1,175 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}Browse Projects{% endblock %}
+{% block find_projects_active %}active{% endblock %}
+{% block head %}
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
+    <!-- Google Maps API -->
+    <style type="text/css">
+      body {
+        overflow:hidden;
+      }
+      #map-canvas { width: 100%; min-height: 400px; height: 100%; margin: 0; padding: 0;}
+      #map-canvas-full {
+        position:fixed;
+        padding:0;
+        margin:0;
+        top:0;
+        left:0;
+        bottom:0;
+        width: 100%;
+        min-height: 800px;
+        height: 100%;
+        overflow:hidden;
+        z-index: 1;
+      }
+      .info_content {
+        width: 340px;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      .info_icons {
+        margin-top: -15px;
+        margin-bottom: 4px;
+        margin-left: -6px;
+      }
+    </style>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCJ_kAww6tmQVER8PQtFicAZ7JdjekbnU"></script>
+    <script type="text/javascript">
+      myStyle = [{"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"lightness":"-5"}]},{"featureType":"landscape.man_made","elementType":"labels.text.fill","stylers":[{"saturation":"21"}]},{"featureType":"landscape.natural","elementType":"geometry.fill","stylers":[{"saturation":"1"},{"color":"#eae2d3"},{"lightness":"20"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"saturation":"39"},{"lightness":"7"},{"gamma":"1.06"},{"visibility":"on"},{"hue":"#00b8ff"},{"weight":"1.44"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"lightness":"100"},{"weight":"1.16"},{"color":"#e0e0e0"}]},{"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"saturation":"-16"},{"lightness":"28"},{"gamma":"0.87"}]},{"featureType":"water","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"saturation":"-75"},{"lightness":"-15"},{"gamma":"1.35"},{"weight":"1.45"},{"hue":"#00dcff"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#626262"}]},{"featureType":"water","elementType":"labels.text.stroke","stylers":[{"saturation":"19"},{"weight":"1.84"}]}];
+      //myStyle = [{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#747474"},{"lightness":"23"}]},{"featureType":"poi.attraction","elementType":"geometry.fill","stylers":[{"color":"#f38eb0"}]},{"featureType":"poi.government","elementType":"geometry.fill","stylers":[{"color":"#ced7db"}]},{"featureType":"poi.medical","elementType":"geometry.fill","stylers":[{"color":"#ffa5a8"}]},{"featureType":"poi.park","elementType":"geometry.fill","stylers":[{"color":"#c7e5c8"}]},{"featureType":"poi.place_of_worship","elementType":"geometry.fill","stylers":[{"color":"#d6cbc7"}]},{"featureType":"poi.school","elementType":"geometry.fill","stylers":[{"color":"#c4c9e8"}]},{"featureType":"poi.sports_complex","elementType":"geometry.fill","stylers":[{"color":"#b1eaf1"}]},{"featureType":"road","elementType":"geometry","stylers":[{"lightness":"100"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"},{"lightness":"100"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffd4a5"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffe9d2"}]},{"featureType":"road.local","elementType":"all","stylers":[{"visibility":"simplified"}]},{"featureType":"road.local","elementType":"geometry.fill","stylers":[{"weight":"3.00"}]},{"featureType":"road.local","elementType":"geometry.stroke","stylers":[{"weight":"0.30"}]},{"featureType":"road.local","elementType":"labels.text","stylers":[{"visibility":"on"}]},{"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#747474"},{"lightness":"36"}]},{"featureType":"road.local","elementType":"labels.text.stroke","stylers":[{"color":"#e9e5dc"},{"lightness":"30"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"visibility":"on"},{"lightness":"100"}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#d2e7f7"}]}];
+
+      $(document).ready(function () {
+          resize_map();
+      });
+
+      function resize_map() {
+        var new_height = $(window).height();
+        document.getElementById("map-canvas-full").style["min-height"] = new_height+"px";
+      }
+
+      function initialize() {
+        // Setup map
+        var mapOptions = {
+          center: { lat: 51.5072, lng: -0.1275},
+          zoom: 12,
+          disableDefaultUI: true,
+          streetViewControl: false,
+          streetViewControlOptions: {
+            position: google.maps.ControlPosition.LEFT_CENTER
+          },
+          zoomControl: true,
+          zoomControlOptions: {
+            position: google.maps.ControlPosition.LEFT_CENTER
+          },
+          styles: myStyle
+        };
+
+        var map = new google.maps.Map(document.getElementById('map-canvas-full'),
+            mapOptions);
+
+        // Populate markers with location data
+        var markers = [
+            {% for project in project_list %}
+                ['{{ project.title|escape }}', {{ project.latitude }},{{ project.longitude }}],
+            {% endfor %}
+        ];
+
+        // Populate marker info windows with listing dat
+        var infoWindowContent = [
+            {% for project in project_list %}
+            ['<div class="info_content">' +
+            '<div class="row"><div class="col-md-10"><h3>{{ project.title }}</h3></div></div>' +
+            '<div class="row">' +
+                '<div class="col-md-3">' +
+                    {% if project.listing_pic %}
+                        '<img class="img-rounded custom-img-rounded" src="{{ project.listing_pic.thumbnail.url }}" width="75" height="75">' +
+                    {% else %}
+                        '<img class="img-rounded custom-img-rounded" src="{% static 'images/blank_user.jpg' %}" width="75" height="75">' +
+                    {% endif %}
+                '</div>' +
+                '<div class="col-md-7 info_icons">' +
+                    '<h3><small>' +
+                        '<p><i class="fa fa-user fa-fw"></i> <a href="/profile/{{ project.owner.username }}">{{ project.owner.profile.artist_name }}</a></p> ' +
+                        '<p><i class="fa fa-map-marker fa-fw"></i> {{ project.address|truncatewords:5 }}</p>' +
+                        '<p><i class="fa fa-gbp fa-fw"></i>{% if project.price == 0 %}No Payment{% else %}{{ project.price }}{% endif %}</p>' +
+                    '</small></h3>' +
+                '</div>' +
+            '</div>' +
+            '<p>{{ project.description|truncatewords:20 }}</p>' +
+            //'<p><button class="btn btn-default btn-sm" onclick="wavesurfer{{ forloop.counter0 }}.playPause();"><i class="fa fa-play fa-fw"></i></button></button><div id="wave{{ forloop.counter0 }}"></div></p>' +
+            '<CENTER><div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none" /></div><br />' +
+            '<a href="/listing/{{ project.id }}"><button class="btn btn-default btn-sm"><i class="fa fa-search fa-fw"></i> More Info</button></a></CENTER>' +
+            '</div>'],
+            {% endfor %}
+        ];
+
+        // Display multiple markers on a map
+        var infoWindow = new google.maps.InfoWindow(), marker, i;
+
+        // Loop through array of markers & place each one on the map
+        for( i = 0; i < markers.length; i++ ) {
+            var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+
+            marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                icon: '{% static 'images/map/marker1_small.png' %}',
+                title: markers[i][0]
+            });
+
+            // Allow each marker to have an info window
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                    infoWindow.setContent(infoWindowContent[i][0]);
+                    infoWindow.open(map, marker);
+                }
+            })(marker, i));
+        }
+
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+      window.onresize = function(event) {
+        initialize();
+        resize_map();
+      };
+
+    </script>
+{%  endblock %}
+
+{% block pre_content %}
+        <!-- GOOGLE MAP API --><div id="map-canvas-full" class="map_holder_inner"></div>
+{% endblock %}
+{% block content %}
+    <br />
+{% endblock %}
+{% comment %}{% block content %}
+    <div class="blank_page_content">
+        <h1>Browse Projects
+        <p><small>Get involved in projects near you</small></p></h1>
+
+        <!-- GOOGLE MAP API-->
+        <div class="map_holder_outer"><div id="map-canvas" class="map_holder_inner"></div></div>
+    `
+    </div>
+{% endblock %}{% endcomment %}
+
+{% block footer %}{% endblock %}
+
+{% block audio_init %}
+
+    <!-- Create audio player for each project -->
+    <script>
+        var wavesurfer = new Array() ;
+        {% for project in project_list %}
+        var wavesurfer{{ forloop.counter0 }} = Object.create(WaveSurfer);
+        wavesurfer{{ forloop.counter0 }}.init({
+            container: document.querySelector('#wave{{ forloop.counter0 }}'),
+            waveColor: 'pink',
+            progressColor: 'violet'
+        });
+        wavesurfer{{ forloop.counter0 }}.load('{{ project.audio_file.url }}');
+        {% endfor %}
+    </script>
+{% endblock %}

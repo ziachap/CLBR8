@@ -1,0 +1,97 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}Feed{% endblock %}
+{% block feed_active %}active{% endblock %}
+{% block content %}
+
+    <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
+    <div class="row">
+    <div class="col-xs-10 col-xs-offset-0 col-sm-7 col-sm-offset-3 col-md-10 col-md-offset-1 col-lg-12 col-lg-offset-0">
+        <!-- FEED BEGIN -->
+        <h1>Hey {{ c_user.first_name }}!
+        <p><small>Here is what's happening near you:</small></p>
+        </h1>
+        <hr>
+        <div class="row">
+            <div id="container">
+            {% for project in r_listing reversed %}
+                <div class="item feed_item">
+                    <div class="row"><div class="col-md-10"><h3>{{ project.title }}</h3></div></div>
+                    <div class="row">
+                        <div class="col-xs-3 col-md-3"><a href="/listing/{{ project.id }}">
+                            <img class="img-rounded custom-img-rounded"
+                            {% if project.listing_pic %}
+                                src="{{ project.listing_pic.thumbnail.url }}"
+                                onmouseout="this.src='{{ project.listing_pic.thumbnail.url }}'"
+                            {% else %}
+                                src="{% static 'images/blank_user.jpg' %}"
+                                onmouseout="this.src='{% static 'images/blank_user.jpg' %}'"
+                            {% endif %}
+{#                            onmouseover="this.src='https://maps.googleapis.com/maps/api/staticmap?center={{ project.latitude }},{{ project.longitude }}&zoom=4&size=75x75&maptype=roadmap'"#}
+                            alt="Map" width="75" height="75">
+                        </a></div>
+                        <div class="col-xs-9 col-md-9 info_icons">
+                            <h3><small>
+                                <p><i class="fa fa-user fa-fw"></i> <a href="/profile/{{ project.owner.username }}">{{ project.owner.profile.artist_name }}</a></p>
+                                <p><i class="fa fa-map-marker fa-fw"></i> {{ project.address|truncatechars:25 }}</p>
+                                <p><i class="fa fa-gbp fa-fw"></i>{% if project.price == 0 %}No Payment{% else %}{{ project.price }}{% endif %}</p>
+                            </small></h3>
+                        </div>
+                    </div>
+                    <p><strong>{{ project.genre }}</strong> - {{ project.description|truncatewords:20 }}</p>
+                    <CENTER>
+                        <div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none" /></div><br />
+                        <a href="/listing/{{ project.id }}"><button class="btn btn-default btn-sm"><i class="fa fa-search fa-fw"></i> More Info</button></a>
+                        {% if project.owner.username == c_user.username %}
+                            <a href="/edit_listing/{{ project.id }}"><button class="btn btn-default btn-sm"><i class="fa fa-edit fa-fw"></i> Edit Project</button></a>
+                        {% endif %}
+                    </CENTER>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+        <!-- FEED END -->
+    </div>
+    </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'packery/packery.pkgd.min.js' %}"></script>
+    <script src="{% static 'draggability/draggabilly.pkgd.min.js' %}"></script>
+    <script>
+        var $container = $('#container').packery({
+          //columnWidth: 80
+          //rowHeight: 90
+        });
+        /*
+        $container.find('.item').each( function( i, itemElem ) {
+          // make element draggable with Draggabilly
+          var draggie = new Draggabilly( itemElem );
+          // bind Draggabilly events to Packery
+          $container.packery( 'bindDraggabillyEvents', draggie );
+        });
+        //*/
+        $(window).load(function() {
+            $container.packery({
+              itemSelector: '.item',
+              gutter: 5
+            });
+        });
+    </script>
+    <link href="{% static 'css/listing_packery.css' %}" rel="stylesheet">
+    <style type="text/css">
+        .feed_item { width:380px; padding-left: 20px; padding-right: 12px; padding-bottom: 15px; }
+        .item:hover {  }
+        .info_icons {
+            margin-top: -15px;
+            margin-bottom: 4px;
+            margin-left: -10px;
+         }
+        .address_info {
+            margin-top: -27px;
+            margin-bottom: 0px;
+        }
+    </style>
+{% endblock %}
+

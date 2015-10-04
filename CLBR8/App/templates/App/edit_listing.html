@@ -1,0 +1,159 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}Edit Project{% endblock %}
+
+{% block head %}
+    <!-- google map picker -->
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCJ_kAww6tmQVER8PQtFicAZ7JdjekbnU">
+    </script>
+    <style type="text/css">
+      #mapCanvas { width: 100%; min-height: 400px; height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script src="{% static 'gmapsjs/gmaps.js' %}"></script>
+    <script src="{% static 'geometa/geometa.js' %}"></script>
+
+    <!-- My google maps script -->
+    <script>
+        // Passing django values to the map
+        var init_lat = {{ r_listing.latitude }};
+        var init_lon = {{ r_listing.longitude }};
+    </script>
+    <script src="{% static 'js/map_picker_edit.js' %}"></script>
+
+{%  endblock %}
+
+{% block content %}
+<div class="blank_page_content">
+<div class="row"><div class="col-md-10 col-md-offset-1">
+    <div class="row">
+        <div class="col-md-12 ">
+            <h1>Edit Project: <small>{{ r_listing.title }}</small></h1>
+            {% if form.errors %}<p></p>{% endif %}
+        </div>
+    </div><br />
+
+    <form id="edit_listing_form" method="post" action="/edit_listing/{{ r_listing.id }}/" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <!-- COL 1 -->
+                {{ form.non_field_errors }}
+                {{ form.title.errors }}
+                <label for="{{ form.title.id_for_label }}">Title:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-cube fa-fw"></i></span>
+                <input class="form-control" type="text" name="{{ form.title.name }}" placeholder="Title" value="{{ form.title.value|default_if_none:"" }}">
+                </div><br />
+                {{ form.price.errors }}
+                <label for="{{ form.price.id_for_label }}">Price:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-gbp fa-fw"></i></span>
+                <input class="form-control" type="text" name="{{ form.price.name }}" placeholder="Price" value="{{ form.price.value|default_if_none:"" }}">
+                </div><br />
+                {{ form.description.errors }}
+                <label for="{{ form.description.id_for_label }}">Description:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-align-left fa-fw"></i></span>
+                <textarea class="form-control" type="textarea" rows="10" name="{{ form.description.name }}" placeholder="Description">{{ form.description.value|default_if_none:"" }}</textarea>
+                </div><br />
+                {{ form.genre.errors }}
+                <label for="{{ form.genre.id_for_label }}">Genre:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-headphones fa-fw"></i></span>
+                <select class="form-control" id="id_genre" name="{{ form.genre.name }}">
+                    <option value="" {% if form.genre.value == "" %}selected="selected"{% endif %}>Choose a genre...</option>
+                    <option value="Pop" {% if form.genre.value == "Pop" %}selected="selected"{% endif %}>Pop</option>
+                    <option value="Reggae" {% if form.genre.value == "Reggae" %}selected="selected"{% endif %}>Reggae</option>
+                    <option value="Folk" {% if form.genre.value == "Folk" %}selected="selected"{% endif %}>Folk</option>
+                    <option value="R&amp;B/Soul" {% if form.genre.value == "R&amp;B/Soul" %}selected="selected"{% endif %}>R&amp;B/Soul</option>
+                    <option value="Jazz" {% if form.genre.value == "Jazz" %}selected="selected"{% endif %}>Jazz</option>
+                    <option value="Indie" {% if form.genre.value == "Indie" %}selected="selected"{% endif %}>Indie</option>
+                    <option value="Metal" {% if form.genre.value == "Metal" %}selected="selected"{% endif %}>Metal</option>
+                    <option value="Rock" {% if form.genre.value == "Rock" %}selected="selected"{% endif %}>Rock</option>
+                    <option value="Garage" {% if form.genre.value == "Garage" %}selected="selected"{% endif %}>Garage</option>
+                    <option value="Drum &amp; Bass" {% if form.genre.value == "Drum &amp; Bass" %}selected="selected"{% endif %}>Drum &amp; Bass</option>
+                    <option value="House" {% if form.genre.value == "House" %}selected="selected"{% endif %}>House</option>
+                    <option value="Hip Hop" {% if form.genre.value == "Hip Hop" %}selected="selected"{% endif %}>Hip Hop</option>
+                    <option value="Grime" {% if form.genre.value == "Grime" %}selected="selected"{% endif %}>Grime</option>
+                </select>
+                </div><br />
+                {{ form.listing_pic.errors }}
+                <label for="{{ form.listing_pic.id_for_label }}">Project Picture:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-file-image-o fa-fw"></i></span>
+                <input class="form-control" type="file" name="{{ form.listing_pic.name }}" value="{{ form.listing_pic.value|default_if_none:"" }}">
+                </div><br />
+                {{ form.audio_file.errors }}
+                <label for="{{ form.audio_file.id_for_label }}">Audio File:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-file-sound-o fa-fw"></i></span>
+                <input class="form-control" type="file" name="{{ form.audio_file.name }}" value="{{ form.audio_file.value|default_if_none:"" }}">
+                </div><br />
+            </div>
+
+            <div class="col-md-6">
+                {{ form.address.errors }}
+                <label for="{{ form.address.id_for_label }}">Choose a location:</label>
+                <div id="mapCanvas"></div>
+
+                <table class="table table-striped">
+                <tr><td><i class="fa fa-map-marker fa-fw"></i> <div id="address">address</div></td></tr>
+                </table>
+
+                <input class="form-control" id="lat_form" type="hidden" name="{{ form.latitude.name }}" placeholder="Latitude" size="25"><br />
+                <input class="form-control" id="long_form" type="hidden" name="{{ form.longitude.name }}" placeholder="Longitude" size="25"><br />
+                <input class="form-control" id="address_form" type="hidden" name="{{ form.address.name }}" placeholder="Address" value="{{ form.address.value|default_if_none:"" }}"><br />
+            </div>
+
+            <div class="col-md-6">
+                <CENTER>
+                    <a href="/delete_listing/{{ r_listing.id }}/"><button class="btn btn-default btn-lg"><i class="fa fa-trash fa-fw"></i> Delete Project</button></a>
+                    <button type="submit" class="btn btn-default btn-lg"><i class="fa fa-floppy-o fa-fw"></i> Save Project</button>
+                </CENTER>
+            </div>
+        </div>
+
+
+        <br>
+
+    </form>
+
+    <!-- LISTING OFFERS -->
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if r_offers %}
+                <h3><i class="fa fa-star"></i> Offers ({{ r_offers.count }})</h3>
+                {% for offer in r_offers %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bg-info pad-15">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <a href="/profile/{{ offer.user.username }}">
+                                            <img class="img-circle" src="{{ offer.user.profile.profile_pic.thumbnail.url }}" width="30px" /> {{ offer.user.profile.artist_name }}</a> - {{ offer.description }}
+                                    </div>
+                                    <div class="col-md-3 pull-right">
+                                        <a href=""><button class="btn btn-default"><i class="fa fa-check"></i> Accept Offer</button></a><br /><br />
+                                        <a href=""><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br />
+                {% endfor %}
+            {% else %}
+                <br /><b>No one has applied for your project yet</b>
+            {% endif %}
+        </div>
+    </div>
+    <br>
+
+</div>
+</div></div>
+<br />
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ r_user.profile.artist_name }}'s Projects{% endblock %}
+
+{%  block head %}
+    <style>
+    .profile_listing {
+        padding: 15px;
+        border: 1px solid #e5e5e5;
+        border-radius: 10px;
+    }
+    </style>
+
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="{% static 'magnific-popup/magnific-popup.css' %}">
+    <!-- Magnific Popup core JS file -->
+    <script src="{% static 'magnific-popup/jquery.magnific-popup.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.popup-link').magnificPopup({
+                type: 'image',
+                zoom: {
+                    enabled: true,
+                    duration: 300,
+                    easing: 'ease-in-out',
+                    opener: function(openerElement) {
+                      return openerElement.is('img') ? openerElement : openerElement.find('img');
+                    }
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="blank_page_content" xmlns="http://www.w3.org/1999/html">
+        <br />
+        <!-- PROFILE BEGIN -->
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+                <!-- PROFILE HEADER -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <a class="popup-link" href="{{ r_user.profile.profile_pic.url }}">
+                            <img class="img-rounded custom-img-rounded"
+                                {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+                                src="{% static 'images/blank_user.jpg' %}"
+                                {% else %}
+                                src="{{ r_user.profile.profile_pic.thumbnail.url }}"
+                                {% endif %}
+                                alt="Profile Picture" width="160" height="160">
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h1>{{ r_user.profile.artist_name }}<br />
+                        <small>
+                            {% if r_user.first_name %}{{ r_user.first_name }} {{ r_user.last_name }} -{% endif %}
+                            {% if r_user.profile.producer %}Producer{% endif %}
+                            {% if r_user.profile.producer and r_user.profile.vocalist %} & {% endif %}
+                            {% if r_user.profile.vocalist %}Vocalist{% endif %}
+                        </small>
+                        <br /><small><i class="fa fa-music"></i> {{ r_listing_all.count }} <i class="fa fa-users"></i> {{ r_followers_all.count }} <i class="fa fa-star"></i> {{ r_reviews_all.count }}</small></h1>
+                    </div>
+
+                    <div class="col-md-3 pull-right">
+                        <!-- PROFILE BUTTONS -->
+                        {% if r_user == c_user %}
+                            <a href="{% url 'settings_profile' %}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Profile</button></a>
+                        {% elif r_user in c_user.profile.following.all %}
+                            <a href="#"><button class="btn btn-default btn-md active pull-right" ><i class="fa fa-minus"></i> Unfollow</button></a>
+                        {% else %}
+                            <a href="/follow/{{ r_user.username }}/"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Follow</button></a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- PROFILE PROJECTS -->
+                <hr>
+                {% if r_listing_all %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3><i class="fa fa-music"></i> {{ r_user.profile.artist_name }}'s Projects</h3>
+                        {% for project in r_listing_all reversed %}
+                        <div class="round_outline">
+                            <a href="/listing/{{ project.id }}">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img class="img-rounded custom-img-rounded" src="{{ project.listing_pic.thumbnail.url }}" width="105px" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h4>{% if project.hidden %}<i class="fa fa-lock"></i>{% else %}<i class="fa fa-globe"></i>{% endif %} {{ project.title }}
+                                        <br /><small>{% if project.hidden == false %}<i class="fa fa-male"></i> {{ project.offer_set.all|length }} - {% endif %}{{ project.description|truncatechars:110 }}</small></h4>
+                                        <div class="audiojs"><audio src="{{ project.audio_file.url }}" controls preload="none"/></div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <!-- PROJECT BUTTONS -->
+                                        <a href="/listing/{{ project.id }}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-search"></i> More Info</button></a>
+                                        {% if r_user == c_user %}
+                                            <br /><br /><a href="/edit_listing/{{ project.id }}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Project</button></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <br />
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                <hr>
+
+            </div>
+        </div>
+        <!-- PROFILE END -->
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'packery/packery.pkgd.min.js' %}"></script>
+    <script src="{% static 'draggability/draggabilly.pkgd.min.js' %}"></script>
+    <script>
+        // PACKERY ------------
+        var $container = $('#container').packery({
+          columnWidth: 70,
+          rowHeight: 65
+        });
+        $container.find('.item').each( function( i, itemElem ) {
+          // make element draggable with Draggabilly
+          var draggie = new Draggabilly( itemElem );
+          // bind Draggabilly events to Packery
+          $container.packery( 'bindDraggabillyEvents', draggie );
+        });
+        $(window).load(function() {
+            $container.packery({
+              itemSelector: '.item',
+              gutter: 5
+            });
+        });
+
+        // STAR RATINGS ------------
+        $(window).load(function() {
+        $('#rTotal').raty({
+                cancel    : true,
+                cancelOff : 'cancel-off.png',
+                cancelOn  : 'cancel-on.png',
+                half      : true,
+                size      : 24,
+                starHalf  : 'star-half.png',
+                starOff   : 'star-off.png',
+                starOn    : 'star-on.png',
+                path      : '{{ STATIC_URL }}/static/raty/images', // <-- or wherever your raty images are
+                readOnly: true,
+                score: {{ r_rating_all }}
+        });
+        {% for review in r_reviews %}
+            $('#{{ review.id }}_r1').raty({
+                cancel    : true,
+                cancelOff : 'cancel-off.png',
+                cancelOn  : 'cancel-on.png',
+                half      : true,
+                size      : 24,
+                starHalf  : 'star-half.png',
+                starOff   : 'star-off.png',
+                starOn    : 'star-on.png',
+                path      : '{{ STATIC_URL }}/static/raty/images', // <-- or wherever your raty images are
+                readOnly: true,
+                score: {{ review.rating_1 }}
+            });
+            $('#{{ review.id }}_r2').raty({
+                cancel    : true,
+                cancelOff : 'cancel-off.png',
+                cancelOn  : 'cancel-on.png',
+                half      : true,
+                size      : 24,
+                starHalf  : 'star-half.png',
+                starOff   : 'star-off.png',
+                starOn    : 'star-on.png',
+                path      : '{{ STATIC_URL }}/static/raty/images', // <-- or wherever your raty images are
+                readOnly: true,
+                score: {{ review.rating_2 }}
+            });
+            $('#{{ review.id }}_r3').raty({
+                cancel    : true,
+                cancelOff : 'cancel-off.png',
+                cancelOn  : 'cancel-on.png',
+                half      : true,
+                size      : 24,
+                starHalf  : 'star-half.png',
+                starOff   : 'star-off.png',
+                starOn    : 'star-on.png',
+                path      : '{{ STATIC_URL }}/static/raty/images', // <-- or wherever your raty images are
+                readOnly: true,
+                score: {{ review.rating_3 }}
+            });
+        {% endfor %}
+        });
+    </script>
+    <link href="{% static 'css/listing_packery.css' %}" rel="stylesheet">
+    <style type="text/css">
+        .item:hover { background-color: #FBFBFB; }
+        .item { width: 70px; }
+    </style>
+{% endblock %}

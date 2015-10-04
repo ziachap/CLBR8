@@ -1,6 +1,101 @@
 .blank_page_content {
-        margin-top: 120px;
-        margin-right: auto;
-        margin-left: auto;
-        margin-bottom: 30px;
-    }
+    margin-top: 80px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 30px;
+}
+
+.blank_space {
+    height: 200px;
+    width: 100%;
+}
+
+.custom-img-rounded {
+    border-radius: 11%;
+}
+
+body {
+    height: 100%;
+    padding-bottom: 10px;
+    /*background-image: url("../images/bg.jpg");*/
+}
+
+textarea {
+    resize: none;
+    width: 100%;
+}
+
+.round_outline {
+    padding: 15px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+}
+
+.bg-white {
+    background-color: white;
+}
+.bg-trans {
+    background-color: rgba(255, 255, 255, 0.95);
+}
+.bg-white-shadow {
+    background-color: rgba(255, 255, 255, 0.99);
+    -webkit-box-shadow: 0px 3px 43px -4px rgba(0,0,0,0.48);
+-moz-box-shadow: 0px 3px 43px -4px rgba(0,0,0,0.48);
+box-shadow: 0px 3px 43px -4px rgba(0,0,0,0.48);
+}
+
+.pad-15 {
+    padding: 15px;
+}
+
+.custom-brand {
+    width: 100px;
+}
+
+.message-window {
+    overflow-y: auto;
+    height: 460px;
+}
+
+/*.audiojs { margin: 15px 0px 20px; }*/
+
+.map_holder_outer {
+    padding: 5px;
+    border: 1px solid #e5e5e5;
+    background-color: #fefeff;
+    -webkit-box-shadow: 9px 9px 42px -22px rgba(0,0,0,0.35);
+    -moz-box-shadow: 9px 9px 42px -22px rgba(0,0,0,0.35);
+    box-shadow: 9px 9px 42px -22px rgba(0,0,0,0.35);
+    resize: vertical;
+    overflow: auto;
+    max-height: 700px;
+}
+
+.map_holder_inner {
+    position:fixed;
+    padding:0;
+    margin:0;
+    top:0;
+    left:0;
+    bottom:0;
+    width: 100%;
+    height: 100%;
+    overflow:hidden;
+    z-index: 8;
+    border: 1px solid #dcdcdc;
+    -webkit-box-shadow: inset 9px 9px 42px -22px rgba(0,0,0,0.45);
+    -moz-box-shadow: inset 9px 9px 42px -22px rgba(0,0,0,0.45);
+    box-shadow: inset 9px 9px 42px -22px rgba(0,0,0,0.45);
+    -webkit-box-shadow: 0px 9px 52px -22px rgba(0,0,0,0.20);
+    -moz-box-shadow: 0px 9px 52px -22px rgba(0,0,0,0.20);
+    box-shadow: 0px 9px 52px -22px rgba(0,0,0,0.20);
+}
+
+.btn-xlg {
+    padding: 28px 38px;
+    font-size: 24px; //change this to your desired size
+    line-height: normal;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+            border-radius: 8px;
+}

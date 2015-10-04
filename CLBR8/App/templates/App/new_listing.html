@@ -1,0 +1,204 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}Create Project{% endblock %}
+
+{% block head %}
+    <!-- dropzone file upload -->
+    <script src="{% static 'dropzone/dropzone.js' %}"></script>
+    <style type="text/css" src="{% static 'dropzone/dropzone.css' %}"></style>
+
+    <!-- google map picker -->
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCJ_kAww6tmQVER8PQtFicAZ7JdjekbnU">
+    </script>
+    <style type="text/css">
+      #mapCanvas { width: 100%; min-height: 400px; height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script src="{% static 'gmapsjs/gmaps.js' %}"></script>
+    <script src="{% static 'geometa/geometa.js' %}"></script>
+{% comment %}    <script>
+    var map;
+    $(document).ready(function () {
+        // Create map
+        map = new GMaps({
+            div: '#map',
+            lat: 51.5072,
+            lng: -0.1275,
+            zoom: 15
+        });
+        alert("initialization");
+        map.addMarker({
+            lat: 51.5072,
+            lng: -0.1275,
+            title: 'My Marker',
+        })
+        GMaps.geolocate({
+              success: function(position) {
+                  alert("geolocation success");
+                map.setCenter(position.coords.latitude, position.coords.longitude);
+              },
+              error: function(error) {
+                alert('Geolocation failed: '+error.message);
+              },
+              not_supported: function() {
+                alert("Your browser does not support geolocation");
+              },
+              always: function() {
+                alert("Done!");
+              }
+            });
+        alert("geolocation complete");
+        document.getElementById("find_me").onclick = function () {
+            // Center map using geolocation
+            alert("starting geolocation");
+            GMaps.geolocate({
+              success: function(position) {
+                map.setCenter(position.coords.latitude, position.coords.longitude);
+              },
+              error: function(error) {
+                alert('Geolocation failed: '+error.message);
+              },
+              not_supported: function() {
+                alert("Your browser does not support geolocation");
+              },
+              always: function() {
+                alert("Done!");
+              }
+            });
+        };
+        document.getElementById("address_search").onclick = function () {
+            GMaps.geocode({
+                address: $('#address_search').val(),
+                callback: function (results, status) {
+                    if (status == 'OK') {
+                        var latlng = results[0].geometry.location;
+                        map.setCenter(latlng.lat(), latlng.lng());
+                        map.addMarker({
+                            lat: latlng.lat(),
+                            lng: latlng.lng()
+                        });
+                    }
+                }
+            });
+            alert("geocoding");
+        };
+    });
+
+    </script>{% endcomment %}
+    <!-- My google maps script -->
+    <script src="{% static 'js/map_picker.js' %}"></script>
+
+{%  endblock %}
+
+{% block new_project_active %}active{% endblock %}
+
+{% block content %}
+<div class="blank_page_content">
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+    <div class="row">
+        <div class="col-md-10 ">
+            <h1>Create a new project</h1>
+            {% if form.errors %}<p></p>{% endif %}
+        </div>
+    </div><br />
+
+    <form id="new_listing_form" method="post" action="/new_listing/" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <!-- COL 1 -->
+                {{ form.non_field_errors }}
+                {{ form.title.errors }}
+                <label for="{{ form.title.id_for_label }}">Title:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-cube fa-fw"></i></span>
+                <input class="form-control" type="text" name="{{ form.title.name }}" placeholder="Title" value="{{ form.title.value|default_if_none:"" }}">
+                </div><br />
+                {{ form.price.errors }}
+                <label for="{{ form.price.id_for_label }}">Price:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-gbp fa-fw"></i></span>
+                <input class="form-control" type="text" name="{{ form.price.name }}" placeholder="Price" value="{{ form.price.value|default_if_none:"" }}">
+                </div><br />
+                {{ form.description.errors }}
+                <label for="{{ form.description.id_for_label }}">Description:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-align-left fa-fw"></i></span>
+                <textarea class="form-control" type="textarea" rows="10" name="{{ form.description.name }}" placeholder="Description">{{ form.description.value|default_if_none:"" }}</textarea>
+                </div><br />
+                {{ form.genre.errors }}
+                <label for="{{ form.genre.id_for_label }}">Genre:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-headphones fa-fw"></i></span>
+                <select class="form-control" id="id_genre" name="{{ form.genre.name }}">
+                    <option value="" selected="{{ form.genre.value|default_if_none:"selected" }}">Choose a genre...</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Reggae">Reggae</option>
+                    <option value="Folk">Folk</option>
+                    <option value="R&amp;B/Soul">R&amp;B/Soul</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Indie">Indie</option>
+                    <option value="Metal">Metal</option>
+                    <option value="Rock">Rock</option>
+                    <option value="Garage">Garage</option>
+                    <option value="Drum &amp; Bass">Drum &amp; Bass</option>
+                    <option value="House">House</option>
+                    <option value="Hip Hop">Hip Hop</option>
+                    <option value="Grime">Grime</option>
+                </select>
+                </div><br />
+                {{ form.listing_pic.errors }}
+                <label for="{{ form.listing_pic.id_for_label }}">Project Picture:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-file-image-o fa-fw"></i></span>
+                <input class="form-control " type="file" name="{{ form.listing_pic.name }}" value="{{ form.listing_pic.value|default_if_none:"" }}">
+                </div><br />
+                {{ form.audio_file.errors }}
+                <label for="{{ form.audio_file.id_for_label }}">Audio File:</label>
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-file-sound-o fa-fw"></i></span>
+                <input class="form-control" type="file" name="{{ form.audio_file.name }}" value="{{ form.audio_file.value|default_if_none:"" }}">
+                </div><br />
+            </div>
+
+            <div class="col-md-6">
+                <!-- MAP -->
+                <!--
+                <div class="col-xs-8 col-md-7">
+                <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-globe fa-fw"></i></span>
+                <input class="form-control" id="address_input" type="text" placeholder="Search Address" size="20">
+                </div>
+                </div>
+
+                <div class="col-xs-4 col-md-5">
+                    <div class="btn btn-default" id="address_search"><i class="fa fa-search fa-fw"></i></div>
+                    <div class="btn btn-default" id="find_me" onclick="doGeolocation();"><i class="fa fa-compass fa-fw"></i> Find Me</div>
+                </div><br /><br />-->
+                {{ form.address.errors }}
+                <label for="{{ form.address.id_for_label }}">Choose a location:</label>
+                <div id="mapCanvas"></div>
+
+                <table class="table table-striped">
+                <tr><td><i class="fa fa-map-marker fa-fw"></i> <div id="address">address</div></td></tr>
+                </table>
+
+                <input class="form-control" id="lat_form" type="hidden" name="{{ form.latitude.name }}" placeholder="Latitude" size="25"><br />
+                <input class="form-control" id="long_form" type="hidden" name="{{ form.longitude.name }}" placeholder="Longitude" size="25"><br />
+                <input class="form-control" id="address_form" type="hidden" name="{{ form.address.name }}" placeholder="Address" value="{{ form.address.value|default_if_none:"" }}"><br />
+            </div>
+
+            <div class="col-md-6"><CENTER><button type="submit" class="btn btn-default btn-lg"><i class="fa fa-plus fa-fw"></i> Create Project</button></CENTER></div>
+        </div>
+
+
+        <br>
+    </form>
+</div>
+</div></div>
+<br />
+{% endblock %}

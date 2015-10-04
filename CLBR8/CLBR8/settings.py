@@ -24,7 +24,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1',]
 
 
 # Application definition
@@ -36,6 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cleanup',
+    'stdimage',
     'App',
 )
 
@@ -47,6 +49,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.media',
 )
 
 ROOT_URLCONF = 'CLBR8.urls'
@@ -77,10 +84,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
-LOGIN_URL = '/static/templates/App/login.html'
+MEDIA_URL = '/media/'
+
+STATIC_ROOT = '/Users/Sir Zia/Documents/GitHub/CLBR8/CLBR8/App/static'
+MEDIA_ROOT = '/Users/Sir Zia/Documents/GitHub/CLBR8/CLBR8/App/media'
 
