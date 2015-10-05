@@ -58,7 +58,8 @@
                     <div class="col-md-6">
                         <h1>{{ r_user.profile.artist_name }}<br />
                         <small>
-                            {% if r_user.first_name %}{{ r_user.first_name }} {{ r_user.last_name }} -{% endif %}
+                            {% if r_user.first_name %}{{ r_user.first_name }} {{ r_user.last_name }}{% endif %}
+                            {% if r_user.profile.producer or r_user.profile.vocalist %} - {% endif %}
                             {% if r_user.profile.producer %}Producer{% endif %}
                             {% if r_user.profile.producer and r_user.profile.vocalist %} & {% endif %}
                             {% if r_user.profile.vocalist %}Vocalist{% endif %}
@@ -110,6 +111,8 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% else %}
+                <CENTER><h3>{{ r_user.profile.artist_name }} has no projects <i class="fa fa-frown-o"></i> </h3></CENTER>
                 {% endif %}
                 <hr>
 

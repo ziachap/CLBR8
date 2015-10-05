@@ -212,9 +212,12 @@ def profile_projects(request, username):
 def inbox_default(request):
     # get current user
     c_user = request.user
-    # get all c_user conversations
+    # get c_user's first conversation
     c_conversations = Conversation.objects.filter(participants__in=[c_user])
-    c_id = list(c_conversations.reverse()[:1])[0].id
+    if c_conversations:
+        c_id = list(c_conversations.reverse()[:1])[0].id
+    else:
+        c_id = 0
     return inbox(request, c_id)
 
 def inbox(request, id):
@@ -224,7 +227,18 @@ def inbox(request, id):
     # get all c_user conversations
     c_conversations = Conversation.objects.filter(participants__in=[c_user]).reverse()
 
-    # get c_user target conversation
+    t = loader.get_template('App/inbox.html')
+
+    # if inbox blank
+    if id == 0:
+        blank_inbox = True;
+        c = RequestContext(request, {
+            'c_user': c_user,
+            'blank_inbox': blank_inbox,
+        })
+        return HttpResponse(t.render(c))
+
+    # get target conversation
     c_conversation = Conversation.objects.get(id=id)
 
     # raise error if not in conversation
@@ -235,9 +249,6 @@ def inbox(request, id):
     c_messages = c_conversation.message_set.all
 
     form = MessageForm(request.POST)
-
-    # work out averages
-    t = loader.get_template('App/inbox.html')
     c = RequestContext(request, {
         'c_user': c_user,
         'c_conversations': c_conversations,

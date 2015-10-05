@@ -22,13 +22,16 @@ urlpatterns = patterns('',
 
     url(r'^profile/(?P<username>\w+)/$', views.profile, name='profile'),
     url(r'^profile/(?P<username>\w+)/listings/$', views.profile_projects, name='profile_projects'),
+
     url(r'^listing/([0-9]+)/$', views.listing, name='listing'),
     url(r'^edit_listing/([0-9]+)/$', views.edit_listing, name='edit_listing'),
     url(r'^delete_listing/([0-9]+)/$', views.delete_listing, name='delete_listing'),
     url(r'^new_listing/$', views.new_listing, name='new_listing'),
     url(r'^new_offer/([0-9]+)/$', views.new_offer, name='new_offer'),
+
     url(r'^browse/$', views.browse_map, name='browse_map'),
     url(r'^about/$', views.about, name='about'),
+
     #url(r'^inbox/$', views.inbox, name='inbox'), #OLD
     url(r'^inbox/([0-9]+)/$', views.inbox, name='inbox'),
     url(r'^inbox/$', views.inbox_default, name='inbox_default'),

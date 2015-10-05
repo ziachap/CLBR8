@@ -50,7 +50,7 @@
 
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-7">
                         <h1>{{ r_listing.title }}<br />
                         <small>
                             <a href="/profile/{{ r_listing.owner.username }}"><img class="img-circle" src="{{ r_listing.owner.profile.profile_pic.thumbnail.url }}" width="32px" height="32px"> {{ r_listing.owner.profile.artist_name }}</a>
@@ -61,16 +61,29 @@
                         </small></h1>
                     </div>
 
-                    <div class="col-md-3 pull-right">
+                    <div class="col-md-2 pull-right">
                         <!-- LISTING BUTTONS -->
                         {% if r_user == c_user %}
                             <a href="/edit_listing/{{ r_listing.id }}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Project</button></a>
-                            {% if r_listing.hidden %} <br /><br /><a href="#"><button class="btn btn-default"><i class="fa fa-undo"></i> Reopen Project</button></a>{% endif %}
+                            {% if r_listing.hidden %} <br /><br /><a href="#"><button class="btn btn-default pull-right"><i class="fa fa-undo"></i> Reopen Project</button></a>{% endif %}
                         {% else %}
                             <a href="#"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Apply</button></a>
                         {% endif %}
                     </div>
                 </div>
+
+                <!-- LISTING BUTTON ROW -->
+                {% comment %}<hr>
+                <div class="row">
+                    <div class="col-md-12"><CENTER>
+                        {% if r_user == c_user %}
+                            <a href="/edit_listing/{{ r_listing.id }}"><button class="btn btn-default btn-md" ><i class="fa fa-pencil"></i> Edit Project</button></a>
+                            {% if r_listing.hidden %} <a href="#"><button class="btn btn-default"><i class="fa fa-undo"></i> Reopen Project</button></a>{% endif %}
+                        {% else %}
+                            <a href="#"><button class="btn btn-default btn-md" ><i class="fa fa-plus"></i> Apply</button></a>
+                        {% endif %}
+                    </CENTER></div>
+                </div>{% endcomment %}
 
                 <!-- LISTING ACCEPTED OFFER -->
                 {% if r_listing.employee != null and r_listing.hidden %}
@@ -83,12 +96,12 @@
                                     <div class="col-md-12">
                                         <div class="bg-info pad-15">
                                             <div class="row">
-                                                <div class="col-md-8">
+                                                <div class="col-md-9">
                                                     <a href="/profile/{{ r_listing.employee.user.username }}">
-                                                        <img class="img-circle" src="{{ r_listing.employee.profile_pic.thumbnail.url }}" width="30px" /> {{ r_listing.employee.artist_name }}</a> - {{ r_listing.employee.bio|truncatechars:52 }}
+                                                        <img class="img-circle" src="{{ r_listing.employee.profile_pic.thumbnail.url }}" width="30px" /> {{ r_listing.employee.artist_name }}</a> - {{ r_listing.employee.bio|truncatechars:62 }}
                                                 </div>
-                                                <div class="col-md-3 pull-right">
-                                                    <a href="#"><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+                                                <div class="col-md-2 pull-right">
+                                                    <a href="#"><button class="btn btn-default pull-right"><i class="fa fa-envelope-o"></i> Message</button></a>
                                                 </div>
                                             </div>
                                         </div>

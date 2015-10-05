@@ -16,7 +16,7 @@
             <div id="container">
             {% for project in r_listing reversed %}
                 <div class="item feed_item">
-                    <div class="row"><div class="col-md-10"><h3>{{ project.title }}</h3></div></div>
+                    <div class="row"><div class="col-md-10"><h3>{{ project.title }} {% if project.featured %}<i class="fa fa-star fa-fw"></i>{% endif %}</h3></div></div>
                     <div class="row">
                         <div class="col-xs-3 col-md-3"><a href="/listing/{{ project.id }}">
                             <img class="img-rounded custom-img-rounded"

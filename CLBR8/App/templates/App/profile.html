@@ -58,7 +58,8 @@
                     <div class="col-md-6">
                         <h1>{{ r_user.profile.artist_name }}<br />
                         <small>
-                            {% if r_user.first_name %}{{ r_user.first_name }} {{ r_user.last_name }} -{% endif %}
+                            {% if r_user.first_name %}{{ r_user.first_name }} {{ r_user.last_name }}{% endif %}
+                            {% if r_user.profile.producer or r_user.profile.vocalist %} - {% endif %}
                             {% if r_user.profile.producer %}Producer{% endif %}
                             {% if r_user.profile.producer and r_user.profile.vocalist %} & {% endif %}
                             {% if r_user.profile.vocalist %}Vocalist{% endif %}
@@ -70,10 +71,13 @@
                         <!-- PROFILE BUTTONS -->
                         {% if r_user == c_user %}
                             <a href="{% url 'settings_profile' %}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Profile</button></a>
-                        {% elif r_user in c_user.profile.following.all %}
-                            <a href="/unfollow/{{ r_user.username }}/"><button class="btn btn-default btn-md active pull-right" ><i class="fa fa-minus"></i> Unfollow</button></a>
                         {% else %}
+                            {% if r_user in c_user.profile.following.all %}
+                            <a href="/unfollow/{{ r_user.username }}/"><button class="btn btn-default btn-md active pull-right" ><i class="fa fa-minus"></i> Unfollow</button></a>
+                            {% else %}
                             <a href="/follow/{{ r_user.username }}/"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Follow</button></a>
+                            {% endif %}
+                            <br /><br /><a href="#"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-envelope-o"></i> Message</button></a>
                         {% endif %}
                     </div>
                 </div>
@@ -91,6 +95,7 @@
 
                 <!-- PROFILE DETAIL -->
                 <div class="row">
+                    {% if r_listing %}
                     <div class="col-md-6">
                         <!-- PROFILE COL 1 -->
                         <!-- LISTINGS -->
@@ -118,6 +123,7 @@
                         {% endfor %}
                         {% if r_listing_all.count > 3 %}<CENTER><a href="/profile/{{ r_user.username }}/listings/" class="">See all projects...</a></CENTER>{% endif %}
                     </div>
+                    {% endif %}
 
                     <div class="col-md-6">
                         <!-- PROFILE COL 2 -->
@@ -142,8 +148,9 @@
                                     </a>
                             {% endfor %}
                             </div>
-                        {% endif %}
                         <hr>
+                        {% endif %}
+
                         <!-- SOCIAL MEDIA -->
                         <h3>Connect with {{ r_user.profile.artist_name }}: </h3>
                         {% if r_user.profile.web_link %}

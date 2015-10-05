@@ -76,14 +76,24 @@
         <br />
 
         <!-- INBOX NEW BEGIN -->
-
+        {% comment %}{% if blank_inbox %}
+        <div class="row">
+            <div class="col-md-12">
+                <CENTER>
+                    <h1>Inbox</h1>
+                    <h3>You have no messages!</h3>
+                    <br /><button class="btn btn-default btn-md" ><i class="fa fa-plus"></i> New Message</button>
+                </CENTER>
+            </div>
+        </div>
+        {% else %}{% endcomment %}
         <div class="row">
             <div class="col-md-12">
 
               <div class="row row-offcanvas row-offcanvas-left">
                  <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
                  <h1>Inbox</h1>
-                 <h3><i class="fa fa-inbox"></i> Conversations ({{ c_conversations.count }})</h3>
+                 <h3><i class="fa fa-commenting-o"></i> Conversations {% if c_conversations %}({{ c_conversations.count }}){% endif %}</h3>
                   <div class="list-group">
                     {% for conversation in c_conversations.all %}
                         <a href="/inbox/{{ conversation.id }}" class="list-group-item {% if c_conversation == conversation %}active{% endif %}">
@@ -93,6 +103,8 @@
                         </a>
                     {% endfor %}
                   </div>
+                  {% if blank_inbox %}<h3><small>You have no messages</small></h3><br /> {% endif %}
+                  <CENTER><button class="btn btn-default btn-md" ><i class="fa fa-plus"></i> New Message</button></CENTER>
                 </div><!--/.sidebar-offcanvas-->
                 <div class="col-xs-12 col-sm-9 settings_box">
                   <p class="visible-xs">
@@ -102,8 +114,10 @@
                 <!-- CONVO BEGIN -->
                 <div class="row">
                     <div class="col-md-12">
-
-                        <!-- PROFILE HEADER -->
+                    {% if blank_inbox %}
+                        <CENTER><h1>Nothing Here! <i class="fa fa-###"></i></h1></CENTER>
+                    {% else %}
+                        <!-- CONVO HEADER -->
                         <div class="row">
 
                             <div class="col-md-12">
@@ -161,7 +175,7 @@
                                 </div>
                             </div>
                         </form>
-
+                    {% endif %}
                     </div>
                 </div>
                 <!-- CONVO END -->
@@ -170,6 +184,7 @@
               </div><!--/row-->
             </div>
         </div>
+{#        {% endif %}#}
 
     </div>
 {% endblock %}
