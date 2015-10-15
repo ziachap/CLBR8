@@ -324,6 +324,22 @@ def listing(request, id):
 
     return HttpResponse(t.render(c))
 
+def review(request, id):
+
+    # get data
+    c_user = request.user
+    r_review = Review.objects.get(id=id)
+    r_user = r_review.recipient
+
+    t = loader.get_template('App/review.html')
+    c = Context({
+            'c_user': c_user,
+            'r_user': r_user,
+            'r_review': r_review,
+        })
+
+    return HttpResponse(t.render(c))
+
 def conversation(request, id):
 
     # get current user
@@ -517,6 +533,49 @@ def delete_listing(request, id):
 
     # go back to feed
     t = loader.get_template('App/feed.html')
+    return HttpResponse(t.render(context))
+
+def new_review(request, username):
+    print("views: new review")
+    # get data
+    c_user = request.user
+    r_user = User.objects.get(username=username)
+
+    # get form
+    form = ReviewForm()
+
+    # get the request's context.
+    context = RequestContext(request, {
+            'c_user': c_user,
+            'r_user': r_user,
+            'form': form,
+    })
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        print("views: POST")
+
+        # create a form instance and populate it with data from the request:
+        form = ReviewForm(request.POST, request.FILES)
+
+
+        # check whether it's valid:
+        if form.is_valid():
+            print("views: review form valid")
+            # set owner and save listing
+            l = form.save(commit=False)
+            l.author = c_user.profile
+            l.recipient = r_user
+            l.save();
+
+            # switch request type and redirect to profile (for now)
+            request.method = 'GET'
+            return HttpResponseRedirect('/profile/'+c_user.username)
+        else:
+            print form.errors
+
+    # if a GET (or any other method) we'll create a blank form
+    t = loader.get_template('App/new_review.html')
     return HttpResponse(t.render(context))
 
 def new_offer(request, id):

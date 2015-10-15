@@ -45,3 +45,8 @@ class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
         fields = ('content',)
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ('summary', 'description', 'rating_1', 'rating_2', 'rating_3')

@@ -29,6 +29,9 @@ urlpatterns = patterns('',
     url(r'^new_listing/$', views.new_listing, name='new_listing'),
     url(r'^new_offer/([0-9]+)/$', views.new_offer, name='new_offer'),
 
+    url(r'^review/([0-9]+)/$', views.review, name='review'),
+    url(r'^new_review/(?P<username>\w+)/$', views.new_review, name='new_review'),
+
     url(r'^browse/$', views.browse_map, name='browse_map'),
     url(r'^about/$', views.about, name='about'),
 

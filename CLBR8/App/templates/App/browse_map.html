@@ -79,7 +79,7 @@
         var infoWindowContent = [
             {% for project in project_list %}
             ['<div class="info_content">' +
-            '<div class="row"><div class="col-md-10"><h3>{{ project.title }}</h3></div></div>' +
+            '<div class="row"><div class="col-md-10"><h3>{{ project.title }} {% if project.featured %}<i class="fa fa-star fa-fw"></i>{% endif %}</h3></div></div>' +
             '<div class="row">' +
                 '<div class="col-md-3">' +
                     {% if project.listing_pic %}

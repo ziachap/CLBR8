@@ -90,6 +90,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-STATIC_ROOT = '/Users/Sir Zia/Documents/GitHub/CLBR8/CLBR8/App/static'
-MEDIA_ROOT = '/Users/Sir Zia/Documents/GitHub/CLBR8/CLBR8/App/media'
+STATIC_ROOT = '/Users/Zia/Documents/GitHub/CLBR8/CLBR8/App/static'
+MEDIA_ROOT = '/Users/Zia/Documents/GitHub/CLBR8/CLBR8/App/media'
 

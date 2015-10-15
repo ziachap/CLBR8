@@ -1,0 +1,69 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}(New Review){% endblock %}
+
+{% block head %}
+    <!-- jquery -->
+    <script src="{% static 'jquery/jquery-2.1.4.min.js' %}"></script>
+
+{%  endblock %}
+
+{% block new_project_active %}active{% endblock %}
+
+{% block content %}
+<div class="blank_page_content">
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+    <div class="row">
+        <div class="col-md-10 ">
+            <h1>Create a new review</h1>
+            {% if form.errors %}<p></p>{% endif %}
+        </div>
+    </div><br />
+    {% if user_reviewed %}
+        You've already reviewed this user! <br /><br />
+        <a href="/profile/{{ r_user.username }}"><button class="btn btn-default"><i class="fa fa-reply fa-fw"></i> Go Back</button></a>
+    {% else %}
+        <form id="new_review_form" method="post" action="/new_review/{{ r_user.username }}/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- COL 1 -->
+                    {{ form.non_field_errors }}
+                    {{ form.summary.errors }}
+                    <label for="{{ form.summary.id_for_label }}">Title:</label>
+                    <div class="input-group margin-bottom-sm">
+                    <span class="input-group-addon"><i class="fa fa-align-left fa-fw"></i></span>
+                    <input class="form-control input-lg" type="text" name="{{ form.summary.name }}" placeholder="Title" value="{{ form.summary.value|default_if_none:"" }}">
+                    </div><br />
+
+                    {{ form.description.errors }}
+                    <label for="{{ form.description.id_for_label }}">Description:</label>
+                    <div class="input-group margin-bottom-sm">
+                    <span class="input-group-addon"><i class="fa fa-align-left fa-fw"></i></span>
+                    <textarea class="form-control input-lg" type="textarea" rows="10" name="{{ form.description.name }}" placeholder="Description">{{ form.description.value|default_if_none:"" }}</textarea>
+                    </div><br />
+
+                    <label for="{{ form.description.id_for_label }}">Rating_1:</label>
+                    {{ form.rating_1 }}
+                    <br />
+
+                    <label for="{{ form.description.id_for_label }}">Rating_2:</label>
+                    {{ form.rating_2 }}
+                    <br />
+
+                    <label for="{{ form.description.id_for_label }}">Rating_3:</label>
+                    {{ form.rating_3 }}
+                    <br />
+
+                    <CENTER><input class="btn btn-default btn-lg" type="submit" value="Submit" /></CENTER>
+                </div>
+
+            </div>
+            <br>
+        </form>
+    {%  endif %}
+</div>
+</div></div>
+<br />
+{% endblock %}

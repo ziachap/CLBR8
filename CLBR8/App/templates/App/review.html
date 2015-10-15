@@ -1,0 +1,217 @@
+{% extends "App/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ r_review.title }}{% endblock %}
+
+{%  block head %}
+<!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="{% static 'magnific-popup/magnific-popup.css' %}">
+    <!-- Magnific Popup core JS file -->
+    <script src="{% static 'magnific-popup/jquery.magnific-popup.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.popup-link').magnificPopup({
+                type: 'image',
+                zoom: {
+                    enabled: true,
+                    duration: 300,
+                    easing: 'ease-in-out',
+                    opener: function(openerElement) {
+                      return openerElement.is('img') ? openerElement : openerElement.find('img');
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+<div class="blank_page_content"  xmlns="http://www.w3.org/1999/html">
+        <br />
+        <!-- LISTING BEGIN -->
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12 col-sm-offset-0">
+
+                <!-- LISTING HEADER -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <a class="popup-link" href="src='{% if r_listing.listing_pic == "" or r_listing.listing_pic == Null %}{% static 'images/blank_user.jpg' %}{% else %}{{ r_listing.listing_pic.url }}{% endif %}'">
+                            <img class="img-rounded custom-img-rounded"
+                            {% if r_listing.listing_pic == "" or r_listing.listing_pic == Null %}
+                                {% if r_user.profile.profile_pic == "" or r_user.profile.profile_pic == Null %}
+                                    src="{% static 'images/blank_user.jpg' %}"
+                                {% else %}
+                                    src="{{ r_user.profile.profile_pic.thumbnail.url }}"
+                                {% endif %}
+                            {% else %}
+                                src="{{ r_listing.listing_pic.thumbnail.url }}"
+                            {%  endif %}
+                            alt="Profile Picture" width="160" height="160">
+                        </a>
+
+                    </div>
+
+                    <div class="col-md-7">
+                        <h1>{{ r_review.summary }}<br />
+                        <small>
+                            <a href="/profile/{{ r_listing.owner.username }}"><img class="img-circle" src="{{ r_listing.owner.profile.profile_pic.thumbnail.url }}" width="32px" height="32px"> {{ r_listing.owner.profile.artist_name }}</a>
+                            <i class="fa fa-gbp fa-fw"></i>{% if r_listing.price == 0 %}No Payment{% else %}{{ r_listing.price }}{% endif %}
+                            <br /><i class="fa fa-music fa-fw"></i> {{ r_listing.genre }}
+                            {% if r_listing.hidden %} <i class="fa fa-lock fa-fw"></i> Closed{% else %} <i class="fa fa-globe fa-fw"></i> Open{% endif %}
+
+                        </small></h1>
+                    </div>
+
+                    <div class="col-md-2 pull-right">
+                        <!-- LISTING BUTTONS -->
+                        {% if r_user == c_user %}
+                            <a href="/edit_listing/{{ r_listing.id }}"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-pencil"></i> Edit Project</button></a>
+                            {% if r_listing.hidden %} <br /><br /><a href="#"><button class="btn btn-default pull-right"><i class="fa fa-undo"></i> Reopen Project</button></a>{% endif %}
+                        {% else %}
+                            <a href="#"><button class="btn btn-default btn-md pull-right" ><i class="fa fa-plus"></i> Apply</button></a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- LISTING PLAYER -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- AUDIO PLAYER BEGIN -->
+                        <table border=0 style="width: 100%">
+                        <tbody>
+                            <tr>
+                              <td width="1">
+                                <button class="btn btn-default btn-sm" onclick="wavesurfer.playPause();"><i id="audio_button" class="fa fa-spinner fa-spin fa-fw fa-2x"></i></button>
+                              </td>
+                              <td width="*">
+                                <div id="wave"></div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table><br />
+                    </div>
+                </div><hr>
+
+                <!-- LISTING DETAIL -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- PROFILE COL 1 -->
+                        <h3><i class="fa fa-align-left fa-fw"></i> Description</h3><br />
+                        {{ r_review.description|linebreaksbr }}
+                        <br />
+                    </div>
+
+                    <div class="col-md-6">
+                        <h3><i class="fa fa-map-marker fa-fw"></i> Location</h3><br />
+
+                        <CENTER>
+                            <img class="img"
+                            src="https://maps.googleapis.com/maps/api/staticmap?center={{ r_listing.latitude }},{{ r_listing.longitude }}&zoom=13&size=300x300&maptype=roadmap&markers=color:red%7C%7C{{ r_listing.latitude }},{{ r_listing.longitude }}"
+                            alt="Map" width="300" height="300">
+                            <br /><br />{{ r_listing.address }}
+                        </CENTER>
+
+                    </div>
+                </div>
+
+                <!-- LISTING OFFERS -->
+                {% if r_listing.hidden == False %}
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if user_applied %}
+                            <br /><div class="bg-info pad-15"><CENTER>You've applied for this project</CENTER></div>
+                        {% elif r_user == c_user  %}
+                            {% if r_offers %}
+                                <h3><i class="fa fa-male"></i> Offers ({{ r_offers.count }})</h3>
+                                {% for offer in r_offers %}
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="bg-info pad-15">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <a href="/profile/{{ offer.user.username }}">
+                                                            <img class="img-circle" src="{{ offer.user.profile.profile_pic.thumbnail.url }}" width="30px" /> {{ offer.user.profile.artist_name }}</a> - {{ offer.description }}
+                                                    </div>
+                                                    <div class="col-md-3 pull-right">
+                                                        <a href="/accept_offer/{{ r_listing.id}}/{{ offer.user.username }}"><button class="btn btn-default"><i class="fa fa-check"></i> Accept Offer</button></a><br /><br />
+                                                        <a href="#"><button class="btn btn-default"><i class="fa fa-envelope-o"></i> Message</button></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><br />
+                                {% endfor %}
+                            {% else %}
+                                <br /><b>No one has applied for your project yet</b>
+                            {% endif %}
+                        {% else %}
+                            <br /><CENTER><a href="/new_offer/{{ r_listing.id }}"><button class="btn btn-default btn-lg">Apply for this project</button></a></CENTER>
+                        {%  endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+        <!-- LISTING END -->
+
+    </div>
+</div>
+{% endblock %}
+
+{% block audio_init %}
+    <!-- Create audio player for each project -->
+    <script>
+        var button = document.getElementById("audio_button");
+        var wavesurfer = Object.create(WaveSurfer);
+
+        wavesurfer.init({
+            container: document.querySelector('#wave'),
+            waveColor: 'LightSteelBlue',
+            progressColor: 'CornflowerBlue',
+            height: '60',
+            normalize: 'true'
+        });
+        wavesurfer.load('{{ r_listing.audio_file.url }}');
+
+        wavesurfer.on('ready', function () {
+            button.setAttribute('class', 'fa fa-play fa-fw fa-2x')
+        });
+        wavesurfer.on('pause', function () {
+            button.setAttribute('class', 'fa fa-play fa-fw fa-2x')
+        });
+        wavesurfer.on('play', function () {
+            button.setAttribute('class', 'fa fa-pause fa-fw fa-2x')
+        });
+
+        window.onresize = function(event) {
+        }
+
+    </script>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'packery/packery.pkgd.min.js' %}"></script>
+    <script src="{% static 'draggability/draggabilly.pkgd.min.js' %}"></script>
+    <script>
+        var $container = $('#container').packery({
+          columnWidth: 80
+        });
+
+        $container.find('.item').each( function( i, itemElem ) {
+          // make element draggable with Draggabilly
+          var draggie = new Draggabilly( itemElem );
+          // bind Draggabilly events to Packery
+          $container.packery( 'bindDraggabillyEvents', draggie );
+        });
+
+        $(window).load(function() {
+            $container.packery({
+              itemSelector: '.item',
+              gutter: 5
+            });
+        });
+    </script>
+    <link href="{% static 'css/listing_packery.css' %}" rel="stylesheet">
+    <style type="text/css">
+        .item:hover { background-color: #FBFBFB; }
+    </style>
+{% endblock %}
